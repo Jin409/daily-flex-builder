@@ -90,7 +90,7 @@ const ReflectionCalendar = ({ reflections, selectedDate, onSelectDate }: Reflect
                 const IconComponent = iconMap[config.icon as keyof typeof iconMap];
                 
                 return (
-                  <div key={reflection.id} className="space-y-4">
+                  <div key={reflection.id} className="space-y-4 mb-6 last:mb-0">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-full bg-gradient-to-br from-orange-100 to-pink-100">
                         <IconComponent className="w-4 h-4 text-orange-600" />
@@ -103,9 +103,14 @@ const ReflectionCalendar = ({ reflections, selectedDate, onSelectDate }: Reflect
                       </div>
                     </div>
                     <div className="bg-gradient-to-r from-orange-50 to-pink-50 p-4 rounded-lg">
-                      <p className="text-gray-700 leading-relaxed">
+                      <p className="text-gray-700 leading-relaxed mb-2">
                         {reflection.reflection}
                       </p>
+                      <div className="text-sm text-gray-500 flex items-center gap-2">
+                        <span>응원 {reflection.comments?.length || 0}개</span>
+                        <span>•</span>
+                        <span>공감</span>
+                      </div>
                     </div>
                   </div>
                 );
