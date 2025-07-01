@@ -123,7 +123,7 @@ const DailyMission: React.FC<DailyMissionProps> = ({ onComplete, isCompleted }) 
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className={mission.color} size="sm">
+                        <Badge variant="outline" className={mission.color}>
                           {mission.category}
                         </Badge>
                       </div>
