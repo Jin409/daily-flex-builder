@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Brain, Heart, MessageCircle, ThumbsUp, Send } from 'lucide-react';
+import { Users, Brain, Heart, MessageCircle, ThumbsUp, Send, PlusCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { ReflectionEntry, categoryConfig, Comment } from '@/types/reflection';
@@ -24,6 +23,8 @@ const ReflectionCard = ({ reflection }: ReflectionCardProps) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState(reflection.comments || []);
   const [commentType, setCommentType] = useState<'comment' | 'feedback'>('comment');
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [suggestMission, setSuggestMission] = useState('');
 
   const config = categoryConfig[reflection.category];
   const IconComponent = iconMap[config.icon as keyof typeof iconMap];
@@ -39,6 +40,15 @@ const ReflectionCard = ({ reflection }: ReflectionCardProps) => {
       };
       setComments([...comments, comment]);
       setNewComment('');
+    }
+  };
+
+  const handleSuggestMission = () => {
+    if (suggestMission.trim()) {
+      // 실제 미션 제안 로직은 추후 구현
+      setShowSuggest(false);
+      setSuggestMission('');
+      alert('미션이 제안되었습니다! (실제 연결은 추후 구현)');
     }
   };
   
@@ -85,6 +95,15 @@ const ReflectionCard = ({ reflection }: ReflectionCardProps) => {
           >
             <ThumbsUp className="w-4 h-4 mr-1" />
             공감
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-green-600 border-green-200 hover:bg-green-50"
+            onClick={() => setShowSuggest(!showSuggest)}
+          >
+            <PlusCircle className="w-4 h-4 mr-1" />
+            미션 제안하기
           </Button>
         </div>
 
@@ -147,6 +166,24 @@ const ReflectionCard = ({ reflection }: ReflectionCardProps) => {
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {showSuggest && (
+          <div className="flex gap-2 mb-4 animate-fade-in">
+            <Textarea
+              value={suggestMission}
+              onChange={e => setSuggestMission(e.target.value)}
+              placeholder="새로운 미션을 제안해보세요!"
+              className="flex-1 min-h-[40px] border-green-200 focus:border-green-400"
+            />
+            <Button
+              onClick={handleSuggestMission}
+              disabled={!suggestMission.trim()}
+              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
           </div>
         )}
       </CardContent>
