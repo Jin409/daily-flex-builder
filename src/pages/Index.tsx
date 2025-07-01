@@ -62,7 +62,7 @@ const Index = () => {
         {/* 헤더 */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
-            플렉시블 마인드
+            Re:try
           </h1>
           <p className="text-gray-600 text-lg">
             매일 조금씩, 더 유연한 나로 성장하기
