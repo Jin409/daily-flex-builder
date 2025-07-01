@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, TrendingUp, Lightbulb, Star } from 'lucide-react';
+import { CheckCircle, Target, TrendingUp, Lightbulb, Star, Calendar } from 'lucide-react';
 import DailyMission from '@/components/DailyMission';
 import ReflectionDialog from '@/components/ReflectionDialog';
 import StatsPanel from '@/components/StatsPanel';
@@ -67,6 +66,16 @@ const Index = () => {
           <p className="text-gray-600 text-lg">
             매일 조금씩, 더 유연한 나로 성장하기
           </p>
+          <div className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => window.location.href = '/reflections'}
+              className="bg-white/80 hover:bg-white border-orange-200 text-orange-700"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              성장 기록 보기
+            </Button>
+          </div>
         </div>
 
         {/* 메인 대시보드 */}
