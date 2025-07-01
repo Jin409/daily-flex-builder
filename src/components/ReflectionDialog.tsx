@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Lightbulb, TrendingUp } from 'lucide-react';
+import { Heart, ArrowRight, Lightbulb } from 'lucide-react';
 
 interface ReflectionDialogProps {
   open: boolean;
@@ -22,18 +22,21 @@ interface ReflectionDialogProps {
 const reflectionPrompts = [
   {
     icon: Heart,
-    question: "이 미션을 수행하면서 어떤 감정을 느꼈나요?",
-    placeholder: "예: 처음엔 긴장했지만 점차 편안해졌어요..."
+    question: "미션을 시작하기 전에 어떤 감정이었나요?",
+    placeholder: "예: 긴장했고, 망설여졌어요...",
+    type: "before"
+  },
+  {
+    icon: Heart,
+    question: "미션을 완료한 후 어떤 감정인가요?",
+    placeholder: "예: 생각보다 별거 아니었고, 뿌듯해요...",
+    type: "after"
   },
   {
     icon: Lightbulb,
-    question: "오늘의 경험에서 새롭게 깨달은 점이 있나요?",
-    placeholder: "예: 생각보다 사람들이 친근하게 반응해주었어요..."
-  },
-  {
-    icon: TrendingUp,
-    question: "앞으로 이런 상황에서 어떻게 행동하고 싶나요?",
-    placeholder: "예: 더 자연스럽게 대화를 이어가고 싶어요..."
+    question: "이 경험을 통해 어떤 것을 깨달았나요?",
+    placeholder: "예: 막상 해보니 별거 아니었어요. 다음엔 더 자신있게 할 수 있을 것 같아요...",
+    type: "insight"
   }
 ];
 
@@ -50,7 +53,7 @@ const ReflectionDialog: React.FC<ReflectionDialogProps> = ({ open, onClose, onSu
   };
 
   const handleSubmit = () => {
-    const fullReflection = reflections.join('\n\n');
+    const fullReflection = `시작 전 감정: ${reflections[0]}\n\n완료 후 감정: ${reflections[1]}\n\n깨달은 점: ${reflections[2]}`;
     onSubmit(fullReflection);
     onClose();
     // 리셋
@@ -72,8 +75,8 @@ const ReflectionDialog: React.FC<ReflectionDialogProps> = ({ open, onClose, onSu
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="p-2 rounded-full bg-green-100">
-              <IconComponent className="w-5 h-5 text-green-600" />
+            <div className="p-2 rounded-full bg-orange-100">
+              <IconComponent className="w-5 h-5 text-orange-600" />
             </div>
             성장 기록하기
           </DialogTitle>
@@ -89,13 +92,26 @@ const ReflectionDialog: React.FC<ReflectionDialogProps> = ({ open, onClose, onSu
               <div
                 key={index}
                 className={`h-2 flex-1 rounded-full ${
-                  index <= currentStep ? 'bg-green-500' : 'bg-gray-200'
+                  index <= currentStep ? 'bg-orange-500' : 'bg-gray-200'
                 }`}
               />
             ))}
           </div>
 
-          <Card className="border-0 bg-gradient-to-r from-green-50 to-blue-50">
+          {/* 감정 변화 시각화 */}
+          {currentStep === 1 && reflections[0] && (
+            <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50 p-3">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="bg-orange-100 px-3 py-1 rounded-full">
+                  시작 전: {reflections[0].slice(0, 20)}...
+                </div>
+                <ArrowRight className="w-4 h-4 text-orange-600" />
+                <div className="text-orange-600 font-medium">완료 후는?</div>
+              </div>
+            </Card>
+          )}
+
+          <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
             <CardContent className="p-4">
               <Label className="text-base font-medium text-gray-800 block mb-3">
                 {currentPrompt.question}
@@ -114,7 +130,7 @@ const ReflectionDialog: React.FC<ReflectionDialogProps> = ({ open, onClose, onSu
               <Button
                 variant="outline"
                 onClick={() => setCurrentStep(currentStep - 1)}
-                className="flex-1"
+                className="flex-1 border-orange-200 text-orange-700 hover:bg-orange-50"
               >
                 이전
               </Button>
@@ -122,7 +138,7 @@ const ReflectionDialog: React.FC<ReflectionDialogProps> = ({ open, onClose, onSu
             <Button
               onClick={handleNext}
               disabled={!reflections[currentStep].trim()}
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              className="flex-1 bg-orange-600 hover:bg-orange-700"
             >
               {currentStep === reflectionPrompts.length - 1 ? '완료' : '다음'}
             </Button>
