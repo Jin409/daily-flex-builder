@@ -1,9 +1,15 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, RefreshCw, Users, Heart, Brain } from 'lucide-react';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
 
 interface DailyMissionProps {
   onComplete: () => void;
@@ -112,15 +118,18 @@ const missions = [
 const DailyMission: React.FC<DailyMissionProps> = ({ onComplete, isCompleted }) => {
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [showNewMission, setShowNewMission] = useState(false);
+  const [customMission, setCustomMission] = useState("");
+  const [customCategory, setCustomCategory] = useState("사회적 유연성");
+  const [missionList, setMissionList] = useState(missions);
 
-  const currentMission = missions[currentMissionIndex];
+  const currentMission = missionList[currentMissionIndex];
 
   const handleMissionComplete = () => {
     onComplete();
   };
 
   const handleNewMission = () => {
-    const nextIndex = (currentMissionIndex + 1) % missions.length;
+    const nextIndex = (currentMissionIndex + 1) % missionList.length;
     setCurrentMissionIndex(nextIndex);
     setShowNewMission(false);
   };
@@ -128,12 +137,37 @@ const DailyMission: React.FC<DailyMissionProps> = ({ onComplete, isCompleted }) 
   const IconComponent = currentMission.icon;
 
   const getAlternativeMissions = () => {
-    const start = (currentMissionIndex + 1) % missions.length;
+    const start = (currentMissionIndex + 1) % missionList.length;
     const alternatives = [];
     for (let i = 0; i < 4; i++) {
-      alternatives.push(missions[(start + i) % missions.length]);
+      alternatives.push(missionList[(start + i) % missionList.length]);
     }
     return alternatives;
+  };
+
+  // 카테고리별 아이콘/색상 매핑
+  const categoryMap = {
+    "사회적 유연성": { icon: Users, color: "bg-orange-100 text-orange-800" },
+    "인지적 유연성": { icon: Brain, color: "bg-pink-100 text-pink-800" },
+    "감정적 유연성": { icon: Heart, color: "bg-purple-100 text-purple-800" },
+  };
+
+  const handleAddCustomMission = () => {
+    if (!customMission.trim()) return;
+    const { icon, color } = categoryMap[customCategory] || categoryMap["사회적 유연성"];
+    const newMission = {
+      id: missionList.length + 1,
+      title: customMission,
+      description: "직접 등록한 미션입니다.",
+      category: customCategory,
+      icon,
+      color
+    };
+    setMissionList([...missionList, newMission]);
+    setCurrentMissionIndex(missionList.length);
+    setCustomMission("");
+    setCustomCategory("사회적 유연성");
+    setShowNewMission(false);
   };
 
   return (
@@ -202,7 +236,7 @@ const DailyMission: React.FC<DailyMissionProps> = ({ onComplete, isCompleted }) 
                 key={mission.id} 
                 className="border hover:shadow-md transition-shadow cursor-pointer hover:border-orange-200"
                 onClick={() => {
-                  setCurrentMissionIndex(missions.findIndex(m => m.id === mission.id));
+                  setCurrentMissionIndex(missionList.findIndex(m => m.id === mission.id));
                   setShowNewMission(false);
                 }}
               >
@@ -234,6 +268,31 @@ const DailyMission: React.FC<DailyMissionProps> = ({ onComplete, isCompleted }) 
           </Button>
         </div>
       )}
+      <div className="flex gap-2 items-center mt-4">
+        <input
+          type="text"
+          className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200"
+          placeholder="직접 미션을 입력해보세요!"
+          value={customMission}
+          onChange={e => setCustomMission(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') handleAddCustomMission(); }}
+        />
+        <div className="w-48">
+          <Select value={customCategory} onValueChange={setCustomCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="카테고리 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="사회적 유연성">사회적 유연성</SelectItem>
+              <SelectItem value="인지적 유연성">인지적 유연성</SelectItem>
+              <SelectItem value="감정적 유연성">감정적 유연성</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={handleAddCustomMission} className="bg-orange-600 hover:bg-orange-700 text-white">
+          미션 추가
+        </Button>
+      </div>
     </div>
   );
 };

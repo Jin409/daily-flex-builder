@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -7,13 +6,13 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell }
 import { TrendingUp, Award, Calendar, Target } from 'lucide-react';
 
 const weeklyData = [
-  { day: '월', completed: 1 },
-  { day: '화', completed: 1 },
-  { day: '수', completed: 1 },
-  { day: '목', completed: 0 },
-  { day: '금', completed: 1 },
-  { day: '토', completed: 0 },
-  { day: '일', completed: 0 },
+  { day: '월', completed: 1, category: '사회적 유연성' },
+  { day: '화', completed: 1, category: '인지적 유연성' },
+  { day: '수', completed: 1, category: '감정적 유연성' },
+  { day: '목', completed: 0, category: null },
+  { day: '금', completed: 1, category: '사회적 유연성' },
+  { day: '토', completed: 0, category: null },
+  { day: '일', completed: 0, category: null },
 ];
 
 const categoryData = [
@@ -39,25 +38,26 @@ const StatsPanel = () => {
             <Calendar className="w-5 h-5 text-blue-600" />
             <CardTitle className="text-lg">이번 주 활동</CardTitle>
           </div>
-          <CardDescription>주간 미션 완료 현황</CardDescription>
+          <CardDescription>요일별 미션 완료 현황</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-32">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyData}>
-                <XAxis dataKey="day" fontSize={12} />
-                <YAxis hide />
-                <Bar 
-                  dataKey="completed" 
-                  fill="#3B82F6" 
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex justify-between items-end gap-2 px-2 py-4">
+            {weeklyData.map((day, idx) => {
+              const cat = categoryData.find(c => c.name === day.category);
+              return (
+                <div key={day.day} className="flex flex-col items-center gap-2">
+                  <div
+                    className={`w-8 h-8 rounded-full shadow-md transition-all duration-200 ${day.completed ? '' : 'opacity-40'}`}
+                    style={{ backgroundColor: day.completed && cat ? cat.color : '#e5e7eb', border: day.completed ? '2px solid #fff' : '2px dashed #d1d5db' }}
+                  />
+                  <span className="text-xs text-gray-700 mt-1 font-medium">{day.day}</span>
+                </div>
+              );
+            })}
           </div>
           <div className="mt-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">4/7</div>
-            <div className="text-sm text-gray-600">이번 주 완료율</div>
+            <div className="text-2xl font-bold text-blue-600">{weeklyData.filter(d => d.completed).length}/7</div>
+            <div className="text-sm text-gray-600">이번 주 완료일</div>
           </div>
         </CardContent>
       </Card>
