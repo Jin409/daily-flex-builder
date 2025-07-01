@@ -75,23 +75,6 @@ const ReflectionHistory = () => {
     return mockReflections.map(reflection => reflection.date);
   };
 
-  const renderCalendarDay = (date: Date) => {
-    const reflections = getReflectionsForDate(date);
-    if (reflections.length === 0) return null;
-
-    const reflection = reflections[0];
-    const config = categoryConfig[reflection.category];
-    
-    return (
-      <div className="relative">
-        <div 
-          className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
-          style={{ backgroundColor: config.dotColor }}
-        />
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -185,16 +168,9 @@ const ReflectionHistory = () => {
                   modifiersStyles={{
                     hasReflection: { 
                       fontWeight: 'bold',
-                      position: 'relative'
+                      backgroundColor: '#FFF7ED',
+                      color: '#EA580C'
                     }
-                  }}
-                  components={{
-                    Day: ({ date, ...props }) => (
-                      <div className="relative">
-                        <button {...props} />
-                        {renderCalendarDay(date)}
-                      </div>
-                    )
                   }}
                 />
               </CardContent>
