@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, TrendingUp, Lightbulb, Star, BookOpen, BarChart2, Compass } from 'lucide-react';
+import { CheckCircle, Target, TrendingUp, Lightbulb, Star, BookOpen, BarChart2, Compass, Users } from 'lucide-react';
 import DailyMission from '@/components/DailyMission';
 import ReflectionDialog from '@/components/ReflectionDialog';
 import StatsPanel from '@/components/StatsPanel';
 import { useToast } from '@/hooks/use-toast';
 import UserTypeTest from '@/components/UserTypeTest';
 import { useNavigate } from 'react-router-dom';
+import GroupManagement from '@/components/GroupManagement';
 
 const flexibilityLevels = [
   { level: 1, character: "👶", description: "시작" },
@@ -32,6 +33,7 @@ const Index = () => {
   const [isFailed, setIsFailed] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [showGroupModal, setShowGroupModal] = useState(false);
 
   const experienceToNextLevel = 100;
   const progressPercentage = (experience / experienceToNextLevel) * 100;
@@ -93,16 +95,26 @@ const Index = () => {
     setTargetType(targetType);
   };
 
+  // 그룹 참여/생성 핸들러(임시)
+  const handleJoinGroup = (groupId: string) => {
+    alert(`그룹(${groupId})에 참여했습니다!`);
+    setShowGroupModal(false);
+  };
+  const handleCreateGroup = (groupName: string) => {
+    alert(`새 그룹(${groupName})이 생성되었습니다!`);
+    setShowGroupModal(false);
+  };
+
   useEffect(() => {
     setShowUserTypeTest(true);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-500 bg-clip-text text-transparent">
             Re:try
           </h1>
           <p className="text-gray-600 text-lg">
@@ -110,30 +122,32 @@ const Index = () => {
           </p>
           <div className="flex flex-row justify-center items-center gap-4 mt-6 max-w-xl mx-auto">
             <Button
-              variant="outline"
               onClick={() => navigate('/reflections')}
-              className="flex flex-row items-center gap-2 px-6 py-3 border-2 border-orange-400 text-orange-700 hover:bg-orange-50 font-semibold text-base rounded-xl shadow-sm min-w-[140px] justify-center"
+              className="flex flex-row items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
             >
               <BookOpen className="w-5 h-5 mr-1" />
-              성장 기록
+              성장 기록 확인하기
             </Button>
             <Button
-              variant="outline"
               onClick={() => navigate('/report')}
-              className="flex flex-row items-center gap-2 px-6 py-3 border-2 border-pink-400 text-pink-700 hover:bg-pink-50 font-semibold text-base rounded-xl shadow-sm min-w-[140px] justify-center"
+              className="flex flex-row items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
             >
               <BarChart2 className="w-5 h-5 mr-1" />
-              성장 리포트
+              성장 레포트 보기
             </Button>
             <Button
-              variant="outline"
-              onClick={() => {
-                if (!showUserTypeTest) setShowUserTypeTest(true);
-              }}
-              className="flex flex-row items-center gap-2 px-6 py-3 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 font-semibold text-base rounded-xl shadow-sm min-w-[140px] justify-center"
+              onClick={() => setShowUserTypeTest(true)}
+              className="flex flex-row items-center gap-2 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
             >
               <Compass className="w-5 h-5 mr-1" />
               성향 진단
+            </Button>
+            <Button
+              onClick={() => setShowGroupModal(true)}
+              className="flex flex-row items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center border border-gray-300"
+            >
+              <Users className="w-5 h-5 mr-1" />
+              그룹
             </Button>
           </div>
         </div>
@@ -141,7 +155,7 @@ const Index = () => {
         {/* 메인 대시보드 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* 유저 프로필 & 레벨 */}
-          <Card className="lg:col-span-1 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <Card className="lg:col-span-1 border-0 shadow-lg bg-white">
             <CardHeader className="text-center pb-2">
               <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
                 <span className="text-5xl">{flexibilityLevels[currentLevel-1]?.character || "👶"}</span>
@@ -171,7 +185,7 @@ const Index = () => {
           </Card>
 
           {/* 오늘의 미션 */}
-          <Card className="lg:col-span-2 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <Card className="lg:col-span-2 border-0 shadow-lg bg-white">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Target className="w-6 h-6 text-orange-500" />
@@ -201,13 +215,13 @@ const Index = () => {
         <StatsPanel />
 
         {/* 격려 메시지 */}
-        <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-500 to-pink-500 text-white">
+        <Card className="border-0 shadow-lg bg-white">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <Lightbulb className="w-8 h-8" />
+              <Lightbulb className="w-8 h-8 text-pink-400" />
               <div>
-                <h3 className="text-xl font-semibold mb-1">오늘의 인사이트</h3>
-                <p className="opacity-90">
+                <h3 className="text-xl font-semibold mb-1 text-pink-600">오늘의 인사이트</h3>
+                <p className="opacity-90 text-gray-700">
                   작은 변화가 큰 성장을 만듭니다. 오늘도 한 걸음 더 나아가세요! 💪
                 </p>
               </div>
@@ -227,6 +241,14 @@ const Index = () => {
           open={showUserTypeTest}
           onClose={() => setShowUserTypeTest(false)}
           onComplete={handleCompleteUserTypeTest}
+        />
+
+        {/* 그룹 관리 모달 */}
+        <GroupManagement
+          open={showGroupModal}
+          onClose={() => setShowGroupModal(false)}
+          onJoinGroup={handleJoinGroup}
+          onCreateGroup={handleCreateGroup}
         />
       </div>
     </div>
