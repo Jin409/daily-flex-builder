@@ -25,7 +25,6 @@ const ReflectionReport = () => {
   const completedCount = myReflections.filter(r => r.status === 'completed').length;
   const attemptedCount = myReflections.filter(r => r.status === 'failed').length;
   const totalCount = myReflections.length;
-  const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   const categoryStats = myReflections.reduce((acc, reflection) => {
     const category = reflection.category;
@@ -71,22 +70,18 @@ const ReflectionReport = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">{totalCount}</div>
                   <div className="text-sm text-gray-600">총 실천 횟수</div>
                 </div>
                 <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-                  <div className="text-sm text-gray-600">성공한 미션</div>
+                  <div className="text-sm text-gray-600">완료한 미션</div>
                 </div>
                 <div className="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg">
                   <div className="text-2xl font-bold text-yellow-600">{attemptedCount}</div>
                   <div className="text-sm text-gray-600">시도한 미션</div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">{completionRate}%</div>
-                  <div className="text-sm text-gray-600">성공률</div>
                 </div>
               </div>
             </CardContent>
@@ -154,7 +149,7 @@ const ReflectionReport = () => {
                       <div className="flex justify-between items-center">
                         <span className="font-medium">{category}</span>
                         <span className="text-sm text-gray-600">
-                          {stats.completed}/{stats.total} ({rate}%)
+                          {stats.completed}/{stats.total}
                         </span>
                       </div>
                       <Progress value={rate} className="h-2" />
@@ -186,7 +181,7 @@ const ReflectionReport = () => {
               </div>
               <p className="text-sm text-gray-600 mt-4">
                 다양한 영역에서 꾸준히 성장하고 계시네요! 
-                {completionRate >= 70 ? ' 정말 대단해요! 🎉' : ' 조금씩 나아가고 있어요! 💪'}
+                {completedCount >= 5 ? ' 정말 대단해요! 🎉' : ' 조금씩 나아가고 있어요! 💪'}
               </p>
             </CardContent>
           </Card>

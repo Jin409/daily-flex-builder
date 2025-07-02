@@ -381,10 +381,10 @@ const DailyMission: React.FC<DailyMissionProps> = ({
                   {isFailed ? (
                     <>
                       <X className="w-4 h-4 mr-2" />
-                      시도했음
+                      시도 완료됨
                     </>
                   ) : (
-                    '시도했지만 실패'
+                    '시도 완료'
                   )}
                 </Button>
 
