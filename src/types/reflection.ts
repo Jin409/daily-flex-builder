@@ -1,4 +1,3 @@
-
 export interface ReflectionEntry {
   id: string;
   date: Date;
@@ -6,7 +5,7 @@ export interface ReflectionEntry {
   title: string;
   reflection: string;
   comments?: Comment[];
-  isPrivate?: boolean;
+  visibility: 'public' | 'private' | 'family'; // 변경: isPrivate 대신 visibility 사용
   isOwner?: boolean;
   status: 'completed' | 'failed' | 'in-progress';
   emotions?: {
@@ -24,6 +23,7 @@ export interface Comment {
   content: string;
   date: Date;
   type: 'comment' | 'feedback';
+  isFamily?: boolean; // 가족 댓글 여부 추가
 }
 
 export interface UserProfile {
@@ -137,14 +137,23 @@ export const mockReflections: ReflectionEntry[] = [
     reflection: '시작 전 감정: 긴장했고, 망설여졌어요.\n\n완료 후 감정: 생각보다 별거 아니었고, 뿌듯해요.\n\n깨달은 점: 막상 해보니 별거 아니었어요. 다음엔 더 자신있게 할 수 있을 것 같아요.',
     status: 'completed',
     isOwner: true,
-    isPrivate: false,
+    visibility: 'public',
     comments: [
       {
         id: '1',
         author: '김성장',
         content: '정말 대단해요! 저도 이런 용기를 내보고 싶어요 👏',
         date: getDateOffset(0),
-        type: 'comment'
+        type: 'comment',
+        isFamily: false
+      },
+      {
+        id: '2',
+        author: '엄마',
+        content: '우리 아이가 정말 많이 성장했네요. 엄마도 뿌듯해요!',
+        date: getDateOffset(0),
+        type: 'feedback',
+        isFamily: true
       }
     ]
   },
@@ -156,8 +165,25 @@ export const mockReflections: ReflectionEntry[] = [
     reflection: '시작 전 감정: 답답하고 참기 어려웠어요.\n\n완료 후 감정: 새로운 관점을 발견해서 신기했어요.\n\n깨달은 점: 다양한 시각을 받아들이는 것이 생각보다 어렵지 않았어요.',
     status: 'completed',
     isOwner: true,
-    isPrivate: false,
-    comments: []
+    visibility: 'family',
+    comments: [
+      {
+        id: '3',
+        author: '아빠',
+        content: '이런 마음가짐이 정말 중요해. 계속 이렇게 성장해 나가길 바래.',
+        date: getDateOffset(-1),
+        type: 'feedback',
+        isFamily: true
+      },
+      {
+        id: '4',
+        author: '친구A',
+        content: '와 대단하다! 나도 이런 자세를 배워야겠어',
+        date: getDateOffset(-1),
+        type: 'comment',
+        isFamily: false
+      }
+    ]
   },
   {
     id: '3',
@@ -167,14 +193,23 @@ export const mockReflections: ReflectionEntry[] = [
     reflection: '시작 전 감정: 화가 나고 조급했어요.\n\n시도 후 감정: 완전히 성공하지는 못했지만, 조금이라도 시도해본 것이 의미있었어요.\n\n깨달은 점: 완벽하지 않아도 시도하는 것 자체가 성장이에요.',
     status: 'failed',
     isOwner: true,
-    isPrivate: false,
+    visibility: 'public',
     comments: [
       {
-        id: '2',
+        id: '5',
         author: '박응원',
         content: '시도하신 것만으로도 대단해요. 완벽하지 않아도 괜찮아요!',
         date: getDateOffset(-2),
-        type: 'feedback'
+        type: 'feedback',
+        isFamily: false
+      },
+      {
+        id: '6',
+        author: '언니',
+        content: '괜찮아, 조금씩 나아지면 돼. 언니가 응원할게!',
+        date: getDateOffset(-2),
+        type: 'comment',
+        isFamily: true
       }
     ]
   },
@@ -186,8 +221,25 @@ export const mockReflections: ReflectionEntry[] = [
     reflection: '시작 전 감정: 귀찮고 번거로울 것 같았어요.\n\n완료 후 감정: 새로운 발견이 있어서 재미있었어요.\n\n깨달은 점: 작은 변화지만 하루를 다르게 시작할 수 있었습니다.',
     status: 'completed',
     isOwner: false,
-    isPrivate: false,
-    comments: []
+    visibility: 'public',
+    comments: [
+      {
+        id: '7',
+        author: '동료B',
+        content: '이런 작은 변화가 큰 차이를 만들죠!',
+        date: getDateOffset(-3),
+        type: 'comment',
+        isFamily: false
+      },
+      {
+        id: '8',
+        author: '가족친구',
+        content: '정말 좋은 시도네요. 저도 해봐야겠어요.',
+        date: getDateOffset(-3),
+        type: 'feedback',
+        isFamily: false
+      }
+    ]
   },
   {
     id: '5',
@@ -197,7 +249,7 @@ export const mockReflections: ReflectionEntry[] = [
     reflection: '시작 전 감정: 어색하고 뭘 말해야 할지 몰랐어요.\n\n완료 후 감정: 생각보다 재미있는 대화를 나눌 수 있었어요.\n\n깨달은 점: 새로운 인연을 만들 수 있었고, 소통의 즐거움을 느꼈습니다.',
     status: 'completed',
     isOwner: false,
-    isPrivate: true,
+    visibility: 'private',
     comments: []
   }
 ];

@@ -44,7 +44,8 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
         author: '익명의 응원자',
         content: newComment,
         date: new Date(),
-        type: commentType
+        type: commentType,
+        isFamily: false // 실제로는 사용자 정보에서 가져와야 함
       };
       setComments([...comments, comment]);
       setNewComment('');
@@ -77,6 +78,19 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
         return null;
     }
   };
+
+  const getVisibilityBadge = () => {
+    switch (reflection.visibility) {
+      case 'private':
+        return <Lock className="w-4 h-4 text-gray-500" />;
+      case 'family':
+        return <Users className="w-4 h-4 text-blue-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const isVisible = reflection.visibility !== 'private';
   
   return (
     <>
@@ -90,7 +104,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <CardTitle className="text-lg text-gray-800">{reflection.title}</CardTitle>
-                  {reflection.isPrivate && <Lock className="w-4 h-4 text-gray-500" />}
+                  {getVisibilityBadge()}
                   {!reflection.isOwner && <User className="w-4 h-4 text-blue-500" />}
                 </div>
                 <CardDescription className="text-sm">
@@ -127,7 +141,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
           )}
           
           {/* 댓글 토글 버튼 */}
-          {!reflection.isPrivate && (
+          {isVisible && (
             <div className="flex items-center gap-2 mb-4">
               <Button
                 variant="outline"
@@ -159,17 +173,22 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
           )}
 
           {/* 댓글 섹션 */}
-          {showComments && !reflection.isPrivate && (
+          {showComments && isVisible && (
             <div className="space-y-4 border-t pt-4">
               {/* 기존 댓글 */}
               {comments.map((comment) => (
                 <div key={comment.id} className="bg-gradient-to-r from-orange-50 to-pink-50 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm text-orange-700">{comment.author}</span>
+                    {comment.isFamily && (
+                      <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
+                        가족
+                      </Badge>
+                    )}
                     <Badge variant="outline" className={`text-xs ${
                       comment.type === 'feedback' 
                         ? 'bg-purple-100 text-purple-700 border-purple-200' 
-                        : 'bg-blue-100 text-blue-700 border-blue-200'
+                        : 'bg-green-100 text-green-700 border-green-200'
                     }`}>
                       {comment.type === 'feedback' ? '피드백' : '응원'}
                     </Badge>
@@ -220,7 +239,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
             </div>
           )}
 
-          {showSuggest && !reflection.isPrivate && (
+          {showSuggest && isVisible && (
             <div className="flex gap-2 mb-4 animate-fade-in">
               <Textarea
                 value={suggestMission}
@@ -238,10 +257,17 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
             </div>
           )}
 
-          {reflection.isPrivate && (
+          {reflection.visibility === 'private' && (
             <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-2 text-sm text-gray-600">
               <Lock className="w-4 h-4" />
               이 기록은 비공개로 설정되어 있습니다.
+            </div>
+          )}
+
+          {reflection.visibility === 'family' && (
+            <div className="bg-blue-50 p-3 rounded-lg flex items-center gap-2 text-sm text-blue-600">
+              <Users className="w-4 h-4" />
+              이 기록은 가족에게만 공개됩니다.
             </div>
           )}
         </CardContent>

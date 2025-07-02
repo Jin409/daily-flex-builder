@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { Edit3, Lock, Unlock } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Edit3, Lock, Unlock, Users } from 'lucide-react';
 import { ReflectionEntry } from '@/types/reflection';
 
 interface ReflectionEditDialogProps {
@@ -31,13 +31,13 @@ const ReflectionEditDialog: React.FC<ReflectionEditDialogProps> = ({
 }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [visibility, setVisibility] = useState<'public' | 'private' | 'family'>('public');
 
   useEffect(() => {
     if (reflection) {
       setTitle(reflection.title);
       setContent(reflection.reflection);
-      setIsPrivate(reflection.isPrivate || false);
+      setVisibility(reflection.visibility || 'public');
     }
   }, [reflection]);
 
@@ -47,7 +47,7 @@ const ReflectionEditDialog: React.FC<ReflectionEditDialogProps> = ({
         ...reflection,
         title,
         reflection: content,
-        isPrivate
+        visibility
       };
       onSave(updatedReflection);
       onClose();
@@ -59,7 +59,29 @@ const ReflectionEditDialog: React.FC<ReflectionEditDialogProps> = ({
     // 리셋
     setTitle('');
     setContent('');
-    setIsPrivate(false);
+    setVisibility('public');
+  };
+
+  const getVisibilityIcon = () => {
+    switch (visibility) {
+      case 'private':
+        return <Lock className="w-4 h-4 text-gray-600" />;
+      case 'family':
+        return <Users className="w-4 h-4 text-blue-600" />;
+      default:
+        return <Unlock className="w-4 h-4 text-orange-600" />;
+    }
+  };
+
+  const getVisibilityDescription = () => {
+    switch (visibility) {
+      case 'private':
+        return '나만 볼 수 있습니다';
+      case 'family':
+        return '가족만 볼 수 있습니다';
+      default:
+        return '모든 사람이 볼 수 있습니다';
+    }
   };
 
   return (
@@ -99,25 +121,24 @@ const ReflectionEditDialog: React.FC<ReflectionEditDialogProps> = ({
 
           <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+              <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  {isPrivate ? (
-                    <Lock className="w-4 h-4 text-gray-600" />
-                  ) : (
-                    <Unlock className="w-4 h-4 text-orange-600" />
-                  )}
-                  <div>
-                    <Label htmlFor="privacy">비공개 설정</Label>
-                    <p className="text-sm text-gray-600">
-                      {isPrivate ? '나만 볼 수 있습니다' : '다른 사람들도 볼 수 있습니다'}
-                    </p>
-                  </div>
+                  {getVisibilityIcon()}
+                  <Label htmlFor="visibility">공개 범위</Label>
                 </div>
-                <Switch
-                  id="privacy"
-                  checked={isPrivate}
-                  onCheckedChange={setIsPrivate}
-                />
+                <Select value={visibility} onValueChange={(value: 'public' | 'private' | 'family') => setVisibility(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="public">전체 공개</SelectItem>
+                    <SelectItem value="family">가족에게만 공개</SelectItem>
+                    <SelectItem value="private">비공개</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-gray-600">
+                  {getVisibilityDescription()}
+                </p>
               </div>
             </CardContent>
           </Card>
