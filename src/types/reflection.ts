@@ -30,6 +30,7 @@ export interface UserProfile {
   id: string;
   name: string;
   userType: 'explorer' | 'challenger' | 'social' | 'thinker' | 'steady';
+  targetType?: 'explorer' | 'challenger' | 'social' | 'thinker' | 'steady';
   customCategories: string[];
   groupId?: string;
 }

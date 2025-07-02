@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, RefreshCw, Users, Heart, Brain, X, Target, MessageCircle } from 'lucide-react';
+import { CheckCircle, RefreshCw, Users, Heart, Brain, X, Target, MessageCircle, Undo2 } from 'lucide-react';
 import {
   Select,
   SelectTrigger,
@@ -16,9 +16,11 @@ import { userTypeMissions, defaultCategories } from '@/types/reflection';
 interface DailyMissionProps {
   onComplete: () => void;
   onFailed: () => void;
+  onCancel: () => void;
   isCompleted: boolean;
   isFailed: boolean;
   userType?: string;
+  targetType?: string;
 }
 
 // 확장된 미션 리스트
@@ -221,9 +223,11 @@ const iconMap = {
 const DailyMission: React.FC<DailyMissionProps> = ({ 
   onComplete, 
   onFailed, 
+  onCancel,
   isCompleted, 
   isFailed, 
-  userType 
+  userType,
+  targetType 
 }) => {
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [showNewMission, setShowNewMission] = useState(false);
@@ -233,21 +237,40 @@ const DailyMission: React.FC<DailyMissionProps> = ({
 
   const currentMission = missionList[currentMissionIndex];
 
-  // 사용자 유형에 따른 맞춤 미션 추천
+  // 현재 성향과 목표 성향에 따른 맞춤 미션 추천
   useEffect(() => {
-    if (userType && userTypeMissions[userType as keyof typeof userTypeMissions]) {
-      const customMissions = userTypeMissions[userType as keyof typeof userTypeMissions];
-      const recommendedMissions = customMissions.map((title, index) => ({
-        id: 1000 + index,
-        title,
-        description: "맞춤형 추천 미션입니다.",
-        category: "맞춤 추천",
-        icon: Target,
-        color: "bg-indigo-100 text-indigo-800"
-      }));
-      setMissionList([...recommendedMissions, ...allMissions]);
+    if (userType || targetType) {
+      const customMissions = [];
+      
+      // 현재 성향 미션 추가
+      if (userType && userTypeMissions[userType as keyof typeof userTypeMissions]) {
+        const currentTypeMissions = userTypeMissions[userType as keyof typeof userTypeMissions];
+        customMissions.push(...currentTypeMissions.map((title, index) => ({
+          id: 2000 + index,
+          title,
+          description: "현재 성향을 강화하는 미션입니다.",
+          category: "현재 성향 강화",
+          icon: Target,
+          color: "bg-blue-100 text-blue-800"
+        })));
+      }
+
+      // 목표 성향 미션 추가
+      if (targetType && userTypeMissions[targetType as keyof typeof userTypeMissions]) {
+        const targetTypeMissions = userTypeMissions[targetType as keyof typeof userTypeMissions];
+        customMissions.push(...targetTypeMissions.map((title, index) => ({
+          id: 3000 + index,
+          title,
+          description: "목표하는 성향으로 성장하기 위한 미션입니다.",
+          category: "목표 성향 달성",
+          icon: Target,
+          color: "bg-purple-100 text-purple-800"
+        })));
+      }
+
+      setMissionList([...customMissions, ...allMissions]);
     }
-  }, [userType]);
+  }, [userType, targetType]);
 
   const handleMissionComplete = () => {
     onComplete();
@@ -255,6 +278,10 @@ const DailyMission: React.FC<DailyMissionProps> = ({
 
   const handleMissionFailed = () => {
     onFailed();
+  };
+
+  const handleMissionCancel = () => {
+    onCancel();
   };
 
   const handleNewMission = () => {
@@ -360,6 +387,18 @@ const DailyMission: React.FC<DailyMissionProps> = ({
                     '시도했지만 실패'
                   )}
                 </Button>
+
+                {/* 미션 취소 버튼 */}
+                {(isCompleted || isFailed) && (
+                  <Button 
+                    onClick={handleMissionCancel}
+                    variant="outline"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                  >
+                    <Undo2 className="w-4 h-4 mr-2" />
+                    취소
+                  </Button>
+                )}
                 
                 {!isCompleted && !isFailed && (
                   <Button 

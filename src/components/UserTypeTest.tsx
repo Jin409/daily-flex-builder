@@ -10,12 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Compass, Zap, Users, Brain, Anchor } from 'lucide-react';
+import { Compass, Zap, Users, Brain, Anchor, ArrowRight } from 'lucide-react';
 
 interface UserTypeTestProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (userType: string) => void;
+  onComplete: (currentType: string, targetType: string) => void;
 }
 
 const questions = [
@@ -55,68 +55,115 @@ const userTypes = {
   explorer: { 
     name: "탐험가", 
     icon: Compass, 
-    description: "새로운 경험을 통해 성장하는 당신" 
+    description: "새로운 경험을 통해 성장하는 당신",
+    traits: "호기심이 많고 모험을 즐기며 새로운 것을 시도하는 것을 좋아합니다"
   },
   challenger: { 
     name: "도전자", 
     icon: Zap, 
-    description: "어려운 과제를 통해 성장하는 당신" 
+    description: "어려운 과제를 통해 성장하는 당신",
+    traits: "목표지향적이고 어려움을 극복하는 것에서 만족감을 얻습니다"
   },
   social: { 
     name: "소통가", 
     icon: Users, 
-    description: "관계를 통해 성장하는 당신" 
+    description: "관계를 통해 성장하는 당신",
+    traits: "사람들과의 관계를 중시하고 협력을 통해 시너지를 만듭니다"
   },
   thinker: { 
     name: "분석가", 
     icon: Brain, 
-    description: "깊은 사고를 통해 성장하는 당신" 
+    description: "깊은 사고를 통해 성장하는 당신",
+    traits: "논리적이고 체계적으로 접근하며 깊이 있게 생각합니다"
   },
   steady: { 
     name: "안정가", 
     icon: Anchor, 
-    description: "꾸준함을 통해 성장하는 당신" 
+    description: "꾸준함을 통해 성장하는 당신",
+    traits: "안정성을 추구하고 꾸준한 노력으로 목표를 달성합니다"
   }
 };
 
 const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }) => {
+  const [step, setStep] = useState<'current' | 'target' | 'result'>('current');
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
-  const [result, setResult] = useState<string | null>(null);
+  const [currentAnswers, setCurrentAnswers] = useState<string[]>([]);
+  const [targetAnswers, setTargetAnswers] = useState<string[]>([]);
+  const [currentType, setCurrentType] = useState<string>('');
+  const [targetType, setTargetType] = useState<string>('');
+
+  const calculateType = (answers: string[]) => {
+    const typeCount = answers.reduce((acc, type) => {
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.keys(typeCount).reduce((a, b) => 
+      typeCount[a] > typeCount[b] ? a : b
+    );
+  };
 
   const handleAnswer = (type: string) => {
-    const newAnswers = [...answers, type];
-    setAnswers(newAnswers);
+    if (step === 'current') {
+      const newAnswers = [...currentAnswers, type];
+      setCurrentAnswers(newAnswers);
 
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      // 결과 계산
-      const typeCount = newAnswers.reduce((acc, type) => {
-        acc[type] = (acc[type] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      
-      const resultType = Object.keys(typeCount).reduce((a, b) => 
-        typeCount[a] > typeCount[b] ? a : b
-      );
-      
-      setResult(resultType);
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        const resultType = calculateType(newAnswers);
+        setCurrentType(resultType);
+        setStep('target');
+        setCurrentQuestion(0);
+      }
+    } else if (step === 'target') {
+      const newAnswers = [...targetAnswers, type];
+      setTargetAnswers(newAnswers);
+
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        const resultType = calculateType(newAnswers);
+        setTargetType(resultType);
+        setStep('result');
+      }
     }
   };
 
   const handleComplete = () => {
-    if (result) {
-      onComplete(result);
+    if (currentType && targetType) {
+      onComplete(currentType, targetType);
       onClose();
       // 리셋
+      setStep('current');
       setCurrentQuestion(0);
-      setAnswers([]);
-      setResult(null);
+      setCurrentAnswers([]);
+      setTargetAnswers([]);
+      setCurrentType('');
+      setTargetType('');
     }
   };
 
-  const progress = ((currentQuestion + (result ? 1 : 0)) / questions.length) * 100;
+  const getProgress = () => {
+    if (step === 'current') {
+      return (currentQuestion / questions.length) * 50;
+    } else if (step === 'target') {
+      return 50 + (currentQuestion / questions.length) * 50;
+    }
+    return 100;
+  };
+
+  const getStepTitle = () => {
+    if (step === 'current') return '현재 나의 성향';
+    if (step === 'target') return '되고 싶은 모습';
+    return '진단 완료';
+  };
+
+  const getStepDescription = () => {
+    if (step === 'current') return '현재 당신의 성향을 파악해보세요';
+    if (step === 'target') return '어떤 모습으로 성장하고 싶으신가요?';
+    return '맞춤형 미션으로 목표를 달성해보세요';
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -124,14 +171,67 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
         <DialogHeader>
           <DialogTitle className="text-center">유연성 유형 진단</DialogTitle>
           <DialogDescription className="text-center">
-            당신만의 맞춤 미션을 위한 간단한 테스트
+            {getStepDescription()}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <Progress value={progress} className="w-full" />
+          <div className="text-center">
+            <h3 className="font-medium text-orange-700 mb-2">{getStepTitle()}</h3>
+            <Progress value={getProgress()} className="w-full" />
+          </div>
           
-          {!result ? (
+          {step === 'result' ? (
+            <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
+              <CardContent className="p-6 text-center">
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="text-center">
+                      <div className="mb-2">
+                        {React.createElement(userTypes[currentType as keyof typeof userTypes].icon, {
+                          className: "w-12 h-12 mx-auto text-orange-600 mb-1"
+                        })}
+                      </div>
+                      <h4 className="font-bold text-orange-800 mb-1">현재</h4>
+                      <p className="text-sm font-medium">
+                        {userTypes[currentType as keyof typeof userTypes].name}
+                      </p>
+                    </div>
+                    
+                    <ArrowRight className="w-6 h-6 text-gray-400" />
+                    
+                    <div className="text-center">
+                      <div className="mb-2">
+                        {React.createElement(userTypes[targetType as keyof typeof userTypes].icon, {
+                          className: "w-12 h-12 mx-auto text-pink-600 mb-1"
+                        })}
+                      </div>
+                      <h4 className="font-bold text-pink-800 mb-1">목표</h4>
+                      <p className="text-sm font-medium">
+                        {userTypes[targetType as keyof typeof userTypes].name}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-gray-600 space-y-2">
+                    <p>
+                      <strong>현재:</strong> {userTypes[currentType as keyof typeof userTypes].traits}
+                    </p>
+                    <p>
+                      <strong>목표:</strong> {userTypes[targetType as keyof typeof userTypes].traits}
+                    </p>
+                  </div>
+                </div>
+                
+                <Button
+                  onClick={handleComplete}
+                  className="mt-6 bg-orange-600 hover:bg-orange-700"
+                >
+                  맞춤 미션 시작하기
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
             <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4 text-center">
@@ -149,28 +249,6 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
                     </Button>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
-              <CardContent className="p-6 text-center">
-                <div className="mb-4">
-                  {React.createElement(userTypes[result as keyof typeof userTypes].icon, {
-                    className: "w-16 h-16 mx-auto text-orange-600 mb-2"
-                  })}
-                </div>
-                <h3 className="text-xl font-bold text-orange-800 mb-2">
-                  {userTypes[result as keyof typeof userTypes].name}
-                </h3>
-                <p className="text-gray-700 mb-4">
-                  {userTypes[result as keyof typeof userTypes].description}
-                </p>
-                <Button
-                  onClick={handleComplete}
-                  className="bg-orange-600 hover:bg-orange-700"
-                >
-                  맞춤 미션 시작하기
-                </Button>
               </CardContent>
             </Card>
           )}
