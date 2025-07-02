@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, TrendingUp, Lightbulb, Star, Calendar } from 'lucide-react';
+import { CheckCircle, Target, TrendingUp, Lightbulb, Star, Calendar, Users, Settings } from 'lucide-react';
 import DailyMission from '@/components/DailyMission';
 import ReflectionDialog from '@/components/ReflectionDialog';
 import StatsPanel from '@/components/StatsPanel';
+import UserTypeTest from '@/components/UserTypeTest';
+import GroupManagement from '@/components/GroupManagement';
 import { useToast } from '@/hooks/use-toast';
+import { UserProfile } from '@/types/reflection';
 
 const Index = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -16,15 +19,33 @@ const Index = () => {
   const [completedMissions, setCompletedMissions] = useState(12);
   const [streak, setStreak] = useState(3);
   const [showReflection, setShowReflection] = useState(false);
+  const [showUserTypeTest, setShowUserTypeTest] = useState(false);
+  const [showGroupManagement, setShowGroupManagement] = useState(false);
   const [todayCompleted, setTodayCompleted] = useState(false);
+  const [missionFailed, setMissionFailed] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { toast } = useToast();
 
   const experienceToNextLevel = 100;
   const progressPercentage = (experience / experienceToNextLevel) * 100;
 
+  // 첫 방문시 유형 테스트 표시
+  useEffect(() => {
+    const hasCompletedTest = localStorage.getItem('userTypeCompleted');
+    if (!hasCompletedTest) {
+      setShowUserTypeTest(true);
+    } else {
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        setUserProfile(JSON.parse(savedProfile));
+      }
+    }
+  }, []);
+
   const handleMissionComplete = () => {
     if (!todayCompleted) {
       setTodayCompleted(true);
+      setMissionFailed(false);
       setShowReflection(true);
       toast({
         title: "미션 완료! 🎉",
@@ -33,18 +54,34 @@ const Index = () => {
     }
   };
 
+  const handleMissionFailed = () => {
+    setMissionFailed(true);
+    setTodayCompleted(false);
+    setShowReflection(true);
+    toast({
+      title: "괜찮아요! 💪",
+      description: "시도 자체가 성장입니다. 경험을 기록해보세요.",
+    });
+  };
+
   const handleReflectionSubmit = (reflection: string) => {
-    setExperience(prev => Math.min(prev + 15, experienceToNextLevel));
+    // 실패해도 경험치는 절반 정도 획득
+    const expGain = missionFailed ? 8 : 15;
+    setExperience(prev => Math.min(prev + expGain, experienceToNextLevel));
     setCompletedMissions(prev => prev + 1);
-    setStreak(prev => prev + 1);
+    if (!missionFailed) {
+      setStreak(prev => prev + 1);
+    }
     
     toast({
-      title: "성장 기록 완료! ✨",
-      description: "회고를 통해 더 깊은 성장을 이루었습니다.",
+      title: missionFailed ? "경험 기록 완료! 🌱" : "성장 기록 완료! ✨",
+      description: missionFailed 
+        ? "시도하신 것만으로도 충분히 의미있습니다!" 
+        : "회고를 통해 더 깊은 성장을 이루었습니다.",
     });
 
     // 레벨업 체크
-    if (experience + 15 >= experienceToNextLevel) {
+    if (experience + expGain >= experienceToNextLevel) {
       setTimeout(() => {
         setCurrentLevel(prev => prev + 1);
         setExperience(0);
@@ -54,6 +91,23 @@ const Index = () => {
         });
       }, 1000);
     }
+  };
+
+  const handleUserTypeComplete = (userType: string) => {
+    const profile: UserProfile = {
+      id: '1',
+      name: '사용자',
+      userType: userType as UserProfile['userType'],
+      customCategories: []
+    };
+    setUserProfile(profile);
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    localStorage.setItem('userTypeCompleted', 'true');
+    
+    toast({
+      title: "유형 진단 완료! 🎯",
+      description: "맞춤형 미션을 제공해드릴게요!",
+    });
   };
 
   return (
@@ -79,6 +133,15 @@ const Index = () => {
               </div>
               <CardTitle className="text-xl">유연성 레벨 {currentLevel}</CardTitle>
               <CardDescription>다음 레벨까지 {experienceToNextLevel - experience}XP</CardDescription>
+              {userProfile && (
+                <Badge variant="outline" className="mx-auto mt-2 bg-orange-100 text-orange-800">
+                  {userProfile.userType === 'explorer' && '탐험가'}
+                  {userProfile.userType === 'challenger' && '도전자'}
+                  {userProfile.userType === 'social' && '소통가'}
+                  {userProfile.userType === 'thinker' && '분석가'}
+                  {userProfile.userType === 'steady' && '안정가'}
+                </Badge>
+              )}
             </CardHeader>
             <CardContent>
               <Progress value={progressPercentage} className="mb-4" />
@@ -92,6 +155,28 @@ const Index = () => {
                   <div className="text-sm text-gray-600">연속 달성일</div>
                 </div>
               </div>
+              
+              {/* 설정 버튼들 */}
+              <div className="flex gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowUserTypeTest(true)}
+                  className="flex-1 text-xs"
+                >
+                  <Settings className="w-3 h-3 mr-1" />
+                  유형 재진단
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowGroupManagement(true)}
+                  className="flex-1 text-xs"
+                >
+                  <Users className="w-3 h-3 mr-1" />
+                  가족/그룹
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -101,9 +186,13 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <Target className="w-6 h-6 text-orange-600" />
                 <CardTitle>오늘의 유연성 미션</CardTitle>
-                {todayCompleted && (
-                  <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800">
-                    완료
+                {(todayCompleted || missionFailed) && (
+                  <Badge variant="secondary" className={`ml-auto ${
+                    missionFailed 
+                      ? 'bg-yellow-100 text-yellow-800' 
+                      : 'bg-orange-100 text-orange-800'
+                  }`}>
+                    {missionFailed ? '시도함' : '완료'}
                   </Badge>
                 )}
               </div>
@@ -111,25 +200,39 @@ const Index = () => {
             <CardContent>
               <DailyMission 
                 onComplete={handleMissionComplete}
+                onFailed={handleMissionFailed}
                 isCompleted={todayCompleted}
+                isFailed={missionFailed}
+                userType={userProfile?.userType}
               />
             </CardContent>
           </Card>
         </div>
 
-        {/* 통계 및 성장 기록 */}
+        {/* 성장 기록 보기 버튼 - 더 눈에 띄게 배치 */}
+        <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-orange-100 to-pink-100">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-8 h-8 text-orange-600" />
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">나의 성장 여정</h3>
+                  <p className="text-gray-600">지금까지의 성장 기록을 확인해보세요</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => window.location.href = '/reflections'}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-lg font-medium shadow-lg"
+              >
+                <TrendingUp className="w-5 h-5 mr-2" />
+                성장 기록 보기
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 통계 */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">나의 성장 여정</h2>
-            <Button
-              variant="outline"
-              onClick={() => window.location.href = '/reflections'}
-              className="bg-white/80 hover:bg-white border-orange-200 text-orange-700"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              성장 기록 보기
-            </Button>
-          </div>
           <StatsPanel />
         </div>
 
@@ -141,18 +244,35 @@ const Index = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-1">오늘의 인사이트</h3>
                 <p className="opacity-90">
-                  작은 변화가 큰 성장을 만듭니다. 오늘도 한 걸음 더 나아가세요! 💪
+                  {missionFailed 
+                    ? "완벽하지 않아도 괜찮아요. 시도하는 것 자체가 성장입니다! 💪"
+                    : "작은 변화가 큰 성장을 만듭니다. 오늘도 한 걸음 더 나아가세요! 💪"
+                  }
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* 회고 다이얼로그 */}
+        {/* 다이얼로그들 */}
         <ReflectionDialog 
           open={showReflection}
           onClose={() => setShowReflection(false)}
           onSubmit={handleReflectionSubmit}
+          isFailed={missionFailed}
+        />
+
+        <UserTypeTest
+          open={showUserTypeTest}
+          onClose={() => setShowUserTypeTest(false)}
+          onComplete={handleUserTypeComplete}
+        />
+
+        <GroupManagement
+          open={showGroupManagement}
+          onClose={() => setShowGroupManagement(false)}
+          onJoinGroup={() => {}}
+          onCreateGroup={() => {}}
         />
       </div>
     </div>
