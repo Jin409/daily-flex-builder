@@ -149,8 +149,24 @@ export const mockReflections: ReflectionEntry[] = [
       },
       {
         id: '2',
-        author: '엄마',
-        content: '우리 아이가 정말 많이 성장했네요. 엄마도 뿌듯해요!',
+        author: '이민수',
+        content: '우리 그룹원이 정말 많이 성장했네요. 뿌듯해요!',
+        date: getDateOffset(0),
+        type: 'feedback',
+        isFamily: true
+      },
+      {
+        id: '3',
+        author: '박지영',
+        content: '응원합니다! 계속 이렇게 도전해보세요 💪',
+        date: getDateOffset(0),
+        type: 'comment',
+        isFamily: false
+      },
+      {
+        id: '4',
+        author: '최하늘',
+        content: '진짜 대단하다! 나도 용기 내볼게',
         date: getDateOffset(0),
         type: 'feedback',
         isFamily: true
@@ -168,20 +184,28 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'family',
     comments: [
       {
-        id: '3',
-        author: '아빠',
+        id: '5',
+        author: '정우진',
         content: '이런 마음가짐이 정말 중요해. 계속 이렇게 성장해 나가길 바래.',
         date: getDateOffset(-1),
         type: 'feedback',
         isFamily: true
       },
       {
-        id: '4',
-        author: '친구A',
+        id: '6',
+        author: '강예린',
         content: '와 대단하다! 나도 이런 자세를 배워야겠어',
         date: getDateOffset(-1),
         type: 'comment',
         isFamily: false
+      },
+      {
+        id: '7',
+        author: '홍서연',
+        content: '정말 멋진 시도였어! 이런 게 진짜 성장이지',
+        date: getDateOffset(-1),
+        type: 'feedback',
+        isFamily: true
       }
     ]
   },
@@ -196,7 +220,7 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'public',
     comments: [
       {
-        id: '5',
+        id: '8',
         author: '박응원',
         content: '시도하신 것만으로도 대단해요. 완벽하지 않아도 괜찮아요!',
         date: getDateOffset(-2),
@@ -204,9 +228,25 @@ export const mockReflections: ReflectionEntry[] = [
         isFamily: false
       },
       {
-        id: '6',
-        author: '언니',
-        content: '괜찮아, 조금씩 나아지면 돼. 언니가 응원할게!',
+        id: '9',
+        author: '김다은',
+        content: '괜찮아, 조금씩 나아지면 돼. 응원할게!',
+        date: getDateOffset(-2),
+        type: 'comment',
+        isFamily: true
+      },
+      {
+        id: '10',
+        author: '이소담',
+        content: '실패해도 도전한 것 자체가 멋져요 👍',
+        date: getDateOffset(-2),
+        type: 'feedback',
+        isFamily: false
+      },
+      {
+        id: '11',
+        author: '조민재',
+        content: '다음엔 더 잘할 수 있을 거야. 화이팅!',
         date: getDateOffset(-2),
         type: 'comment',
         isFamily: true
@@ -224,20 +264,28 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'public',
     comments: [
       {
-        id: '7',
-        author: '동료B',
+        id: '12',
+        author: '윤태영',
         content: '이런 작은 변화가 큰 차이를 만들죠!',
         date: getDateOffset(-3),
         type: 'comment',
         isFamily: false
       },
       {
-        id: '8',
-        author: '가족친구',
+        id: '13',
+        author: '서지훈',
         content: '정말 좋은 시도네요. 저도 해봐야겠어요.',
         date: getDateOffset(-3),
         type: 'feedback',
         isFamily: false
+      },
+      {
+        id: '14',
+        author: '안유진',
+        content: '새로운 길을 찾는 것도 하나의 모험이네요!',
+        date: getDateOffset(-3),
+        type: 'comment',
+        isFamily: true
       }
     ]
   },

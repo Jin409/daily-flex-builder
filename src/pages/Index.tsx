@@ -1,11 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, Settings, Plus, TrendingUp, Target, Heart, BarChart } from 'lucide-react';
+import { Calendar, Users, Settings, TrendingUp, Target, Heart, BarChart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DailyMission from '@/components/DailyMission';
-import ReflectionDialog from '@/components/ReflectionDialog';
 import UserTypeTest from '@/components/UserTypeTest';
 import GroupManagement from '@/components/GroupManagement';
 import { mockReflections, defaultCategories } from '@/types/reflection';
@@ -14,10 +14,11 @@ import { ko } from 'date-fns/locale';
 
 const Index = () => {
   const navigate = useNavigate();
-  const [showReflectionDialog, setShowReflectionDialog] = useState(false);
   const [showUserTypeTest, setShowUserTypeTest] = useState(false);
   const [showGroupManagement, setShowGroupManagement] = useState(false);
   const [recentReflections, setRecentReflections] = useState(mockReflections.slice(0, 3));
+  const [missionCompleted, setMissionCompleted] = useState(false);
+  const [missionFailed, setMissionFailed] = useState(false);
 
   useEffect(() => {
     // 최신 회고록 업데이트 (mockReflections가 변경될 때마다)
@@ -36,6 +37,29 @@ const Index = () => {
 
   const handleCompleteUserTypeTest = (currentType: string, targetType: string) => {
     alert(`현재 유형: ${currentType}, 목표 유형: ${targetType}로 설정되었습니다!`);
+  };
+
+  const handleMissionComplete = () => {
+    setMissionCompleted(true);
+    setMissionFailed(false);
+  };
+
+  const handleMissionFailed = () => {
+    setMissionFailed(true);
+    setMissionCompleted(false);
+  };
+
+  const handleMissionCancel = () => {
+    setMissionCompleted(false);
+    setMissionFailed(false);
+  };
+
+  const handleJoinGroup = (groupId: string) => {
+    console.log('Joining group:', groupId);
+  };
+
+  const handleCreateGroup = (groupName: string) => {
+    console.log('Creating group:', groupName);
   };
 
   return (
@@ -93,15 +117,13 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DailyMission />
-            <Button
-              variant="secondary"
-              className="w-full mt-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-              onClick={() => setShowReflectionDialog(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              오늘의 회고 작성하기
-            </Button>
+            <DailyMission 
+              onComplete={handleMissionComplete}
+              onFailed={handleMissionFailed}
+              onCancel={handleMissionCancel}
+              isCompleted={missionCompleted}
+              isFailed={missionFailed}
+            />
           </CardContent>
         </Card>
 
@@ -131,42 +153,18 @@ const Index = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* 최근 회고 기록 */}
-        <Card className="mb-8 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-pink-600" />
-              최근 회고 기록
-            </CardTitle>
-            <CardDescription>
-              가장 최근의 회고를 확인해보세요
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentReflections.map(reflection => (
-                <div key={reflection.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg">
-                  <div>
-                    <h4 className="font-medium text-gray-800">{reflection.title}</h4>
-                    <p className="text-sm text-gray-600">{reflection.category}</p>
-                  </div>
-                  <Badge variant="outline" className="text-xs">{reflection.status}</Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* 회고 작성 다이얼로그 */}
-      <ReflectionDialog open={showReflectionDialog} onClose={() => setShowReflectionDialog(false)} />
 
       {/* 사용자 유형 테스트 다이얼로그 */}
       <UserTypeTest open={showUserTypeTest} onClose={() => setShowUserTypeTest(false)} onComplete={handleCompleteUserTypeTest} />
 
       {/* 그룹 관리 다이얼로그 */}
-      <GroupManagement open={showGroupManagement} onClose={() => setShowGroupManagement(false)} />
+      <GroupManagement 
+        open={showGroupManagement} 
+        onClose={() => setShowGroupManagement(false)} 
+        onJoinGroup={handleJoinGroup}
+        onCreateGroup={handleCreateGroup}
+      />
     </div>
   );
 };

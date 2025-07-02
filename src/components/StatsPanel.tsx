@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -22,15 +23,54 @@ const categoryData = [
 ];
 
 const achievements = [
-  { title: "첫 걸음", description: "첫 미션 완료", icon: "🎯", unlocked: true },
-  { title: "꾸준함", description: "3일 연속 완료", icon: "🔥", unlocked: true },
-  { title: "용기", description: "어려운 미션 완료", icon: "💪", unlocked: false },
-  { title: "성장", description: "레벨 5 달성", icon: "🌱", unlocked: false },
+  { title: "첫 걸음", description: "첫 미션 완료", icon: "🚶‍♀️", unlocked: true },
+  { title: "꾸준함", description: "3일 연속 완료", icon: "🏃‍♂️", unlocked: true },
+  { title: "용기", description: "어려운 미션 완료", icon: "🦸‍♀️", unlocked: false },
+  { title: "성장", description: "레벨 5 달성", icon: "🧗‍♂️", unlocked: false },
+];
+
+const flexibilityLevels = [
+  { level: 1, character: "👶", description: "시작" },
+  { level: 2, character: "🚶‍♀️", description: "첫걸음" },
+  { level: 3, character: "🏃‍♂️", description: "달리기" },
+  { level: 4, character: "🦸‍♀️", description: "영웅" },
+  { level: 5, character: "🧗‍♂️", description: "마스터" },
 ];
 
 const StatsPanel = () => {
+  const currentLevel = 3; // 예시 레벨
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+      {/* 유연성 레벨 */}
+      <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-purple-600" />
+            <CardTitle className="text-lg">유연성 레벨</CardTitle>
+          </div>
+          <CardDescription>현재 성장 단계</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center mb-4">
+            <div className="text-6xl mb-2">{flexibilityLevels[currentLevel - 1].character}</div>
+            <div className="text-xl font-bold text-purple-600">레벨 {currentLevel}</div>
+            <div className="text-sm text-gray-600">{flexibilityLevels[currentLevel - 1].description}</div>
+          </div>
+          <div className="flex justify-center gap-2">
+            {flexibilityLevels.map((level, idx) => (
+              <div
+                key={level.level}
+                className={`text-lg ${idx < currentLevel ? 'opacity-100' : 'opacity-30'}`}
+              >
+                {level.character}
+              </div>
+            ))}
+          </div>
+          <Progress value={(currentLevel / flexibilityLevels.length) * 100} className="mt-4" />
+        </CardContent>
+      </Card>
+
       {/* 주간 활동 */}
       <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
         <CardHeader>
@@ -58,51 +98,6 @@ const StatsPanel = () => {
           <div className="mt-4 text-center">
             <div className="text-2xl font-bold text-blue-600">{weeklyData.filter(d => d.completed).length}/7</div>
             <div className="text-sm text-gray-600">이번 주 완료일</div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 카테고리별 분석 */}
-      <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-600" />
-            <CardTitle className="text-lg">성장 영역</CardTitle>
-          </div>
-          <CardDescription>카테고리별 경험 분포</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-32 mb-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={30}
-                  outerRadius={50}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="space-y-2">
-            {categoryData.map((category, index) => (
-              <div key={index} className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="text-gray-600">{category.name}</span>
-                </div>
-                <span className="font-medium">{category.value}</span>
-              </div>
-            ))}
           </div>
         </CardContent>
       </Card>
