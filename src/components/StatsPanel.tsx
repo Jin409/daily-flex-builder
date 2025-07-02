@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -42,35 +41,6 @@ const StatsPanel = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-      {/* 유연성 레벨 */}
-      <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-purple-600" />
-            <CardTitle className="text-lg">유연성 레벨</CardTitle>
-          </div>
-          <CardDescription>현재 성장 단계</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center mb-4">
-            <div className="text-6xl mb-2">{flexibilityLevels[currentLevel - 1].character}</div>
-            <div className="text-xl font-bold text-purple-600">레벨 {currentLevel}</div>
-            <div className="text-sm text-gray-600">{flexibilityLevels[currentLevel - 1].description}</div>
-          </div>
-          <div className="flex justify-center gap-2">
-            {flexibilityLevels.map((level, idx) => (
-              <div
-                key={level.level}
-                className={`text-lg ${idx < currentLevel ? 'opacity-100' : 'opacity-30'}`}
-              >
-                {level.character}
-              </div>
-            ))}
-          </div>
-          <Progress value={(currentLevel / flexibilityLevels.length) * 100} className="mt-4" />
-        </CardContent>
-      </Card>
-
       {/* 주간 활동 */}
       <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
         <CardHeader>

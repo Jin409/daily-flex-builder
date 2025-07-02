@@ -11,6 +11,14 @@ import { useToast } from '@/hooks/use-toast';
 import UserTypeTest from '@/components/UserTypeTest';
 import { useNavigate } from 'react-router-dom';
 
+const flexibilityLevels = [
+  { level: 1, character: "👶", description: "시작" },
+  { level: 2, character: "🚶‍♀️", description: "첫걸음" },
+  { level: 3, character: "🏃‍♂️", description: "달리기" },
+  { level: 4, character: "🦸‍♀️", description: "영웅" },
+  { level: 5, character: "🧗‍♂️", description: "마스터" },
+];
+
 const Index = () => {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [experience, setExperience] = useState(45);
@@ -90,11 +98,11 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
             Re:try
           </h1>
           <p className="text-gray-600 text-lg">
@@ -119,7 +127,9 @@ const Index = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => setShowUserTypeTest(true)}
+              onClick={() => {
+                if (!showUserTypeTest) setShowUserTypeTest(true);
+              }}
               className="flex flex-row items-center gap-2 px-6 py-3 border-2 border-yellow-400 text-yellow-700 hover:bg-yellow-50 font-semibold text-base rounded-xl shadow-sm min-w-[140px] justify-center"
             >
               <Compass className="w-5 h-5 mr-1" />
@@ -133,21 +143,27 @@ const Index = () => {
           {/* 유저 프로필 & 레벨 */}
           <Card className="lg:col-span-1 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-2">
-              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                <Star className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
+                <span className="text-5xl">{flexibilityLevels[currentLevel-1]?.character || "👶"}</span>
               </div>
               <CardTitle className="text-xl">유연성 레벨 {currentLevel}</CardTitle>
               <CardDescription>다음 레벨까지 {experienceToNextLevel - experience}XP</CardDescription>
+              <div className="mt-2 text-base font-semibold text-pink-600">{flexibilityLevels[currentLevel-1]?.description}</div>
+              <div className="flex justify-center gap-1 mt-2">
+                {flexibilityLevels.map((level, idx) => (
+                  <span key={level.level} className={`text-lg ${idx < currentLevel ? 'opacity-100' : 'opacity-30'}`}>{level.character}</span>
+                ))}
+              </div>
             </CardHeader>
             <CardContent>
               <Progress value={progressPercentage} className="mb-4" />
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{completedMissions}</div>
+                  <div className="text-2xl font-bold text-orange-600">{completedMissions}</div>
                   <div className="text-sm text-gray-600">완료한 미션</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{streak}</div>
+                  <div className="text-2xl font-bold text-pink-600">{streak}</div>
                   <div className="text-sm text-gray-600">연속 달성일</div>
                 </div>
               </div>
@@ -158,10 +174,10 @@ const Index = () => {
           <Card className="lg:col-span-2 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Target className="w-6 h-6 text-blue-600" />
+                <Target className="w-6 h-6 text-orange-500" />
                 <CardTitle>오늘의 유연성 미션</CardTitle>
                 {todayCompleted && (
-                  <Badge variant="secondary" className="ml-auto bg-green-100 text-green-800">
+                  <Badge variant="secondary" className="ml-auto bg-pink-100 text-pink-800">
                     완료
                   </Badge>
                 )}
@@ -185,7 +201,7 @@ const Index = () => {
         <StatsPanel />
 
         {/* 격려 메시지 */}
-        <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-500 to-pink-400 text-white">
+        <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-500 to-pink-500 text-white">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <Lightbulb className="w-8 h-8" />
