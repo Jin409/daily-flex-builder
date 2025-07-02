@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -85,36 +84,39 @@ const ReflectionCalendar = ({ reflections, selectedDate, onSelectDate }: Reflect
                 );
               }
               
-              return dayReflections.map((reflection) => {
-                const config = categoryConfig[reflection.category];
-                const IconComponent = iconMap[config.icon as keyof typeof iconMap];
-                
-                return (
-                  <div key={reflection.id} className="space-y-4 mb-6 last:mb-0">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-gradient-to-br from-orange-100 to-pink-100">
-                        <IconComponent className="w-4 h-4 text-orange-600" />
+              return dayReflections
+                .map((reflection) => {
+                  const config = categoryConfig[reflection.category];
+                  if (!config) return null;
+                  const IconComponent = iconMap[config.icon as keyof typeof iconMap];
+                  if (!IconComponent) return null;
+                  return (
+                    <div key={reflection.id} className="space-y-4 mb-6 last:mb-0">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-gradient-to-br from-orange-100 to-pink-100">
+                          <IconComponent className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-800">{reflection.title}</h3>
+                          <Badge variant="outline" className={`${config.color} mt-1`}>
+                            {reflection.category}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-800">{reflection.title}</h3>
-                        <Badge variant="outline" className={`${config.color} mt-1`}>
-                          {reflection.category}
-                        </Badge>
+                      <div className="bg-gradient-to-r from-orange-50 to-pink-50 p-4 rounded-lg">
+                        <p className="text-gray-700 leading-relaxed mb-2">
+                          {reflection.reflection}
+                        </p>
+                        <div className="text-sm text-gray-500 flex items-center gap-2">
+                          <span>응원 {reflection.comments?.length || 0}개</span>
+                          <span>•</span>
+                          <span>공감</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-r from-orange-50 to-pink-50 p-4 rounded-lg">
-                      <p className="text-gray-700 leading-relaxed mb-2">
-                        {reflection.reflection}
-                      </p>
-                      <div className="text-sm text-gray-500 flex items-center gap-2">
-                        <span>응원 {reflection.comments?.length || 0}개</span>
-                        <span>•</span>
-                        <span>공감</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              });
+                  );
+                })
+                .filter(Boolean);
             })()
           ) : (
             <div className="text-center py-8 text-gray-500">
