@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,36 +118,45 @@ const Index = () => {
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-500 bg-clip-text text-transparent">
             Re:try
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-lg mb-6">
             매일 조금씩, 더 유연한 나로 성장하기
           </p>
-          <div className="flex flex-row justify-center items-center gap-4 mt-6 max-w-xl mx-auto">
+          
+          {/* 개선된 버튼 디자인 */}
+          <div className="flex flex-wrap justify-center items-center gap-3 max-w-4xl mx-auto">
             <Button
               onClick={() => navigate('/reflections')}
-              className="flex flex-row items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
+              variant="outline"
+              className="flex items-center gap-2 h-10 px-4 py-2 bg-white hover:bg-pink-50 text-pink-700 border-pink-200 hover:border-pink-300 rounded-lg shadow-sm transition-all duration-200 font-medium"
             >
-              <BookOpen className="w-5 h-5 mr-1" />
+              <BookOpen className="w-4 h-4" />
               성장 기록 확인하기
             </Button>
+            
             <Button
               onClick={() => navigate('/report')}
-              className="flex flex-row items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
+              variant="outline"
+              className="flex items-center gap-2 h-10 px-4 py-2 bg-white hover:bg-blue-50 text-blue-700 border-blue-200 hover:border-blue-300 rounded-lg shadow-sm transition-all duration-200 font-medium"
             >
-              <BarChart2 className="w-5 h-5 mr-1" />
+              <BarChart2 className="w-4 h-4" />
               성장 레포트 보기
             </Button>
+            
             <Button
               onClick={() => setShowUserTypeTest(true)}
-              className="flex flex-row items-center gap-2 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center"
+              variant="outline"
+              className="flex items-center gap-2 h-10 px-4 py-2 bg-white hover:bg-purple-50 text-purple-700 border-purple-200 hover:border-purple-300 rounded-lg shadow-sm transition-all duration-200 font-medium"
             >
-              <Compass className="w-5 h-5 mr-1" />
+              <Compass className="w-4 h-4" />
               성향 진단
             </Button>
+            
             <Button
               onClick={() => setShowGroupModal(true)}
-              className="flex flex-row items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-base rounded-xl shadow-sm min-w-[160px] justify-center border border-gray-300"
+              variant="outline"
+              className="flex items-center gap-2 h-10 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300 rounded-lg shadow-sm transition-all duration-200 font-medium"
             >
-              <Users className="w-5 h-5 mr-1" />
+              <Users className="w-4 h-4" />
               그룹
             </Button>
           </div>
