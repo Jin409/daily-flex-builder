@@ -31,6 +31,8 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
   const [showSuggest, setShowSuggest] = useState(false);
   const [suggestMission, setSuggestMission] = useState('');
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 10) + 1);
 
   // 카테고리 설정 찾기
   const categoryData = defaultCategories.find(cat => cat.name === reflection.category);
@@ -45,7 +47,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
         content: newComment,
         date: new Date(),
         type: commentType,
-        isFamily: false // 실제로는 사용자 정보에서 가져와야 함
+        isFamily: false
       };
       setComments([...comments, comment]);
       setNewComment('');
@@ -66,12 +68,17 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
     }
   };
 
+  const handleLike = () => {
+    setLiked(!liked);
+    setLikeCount(prev => liked ? prev - 1 : prev + 1);
+  };
+
   const getStatusBadge = () => {
     switch (reflection.status) {
       case 'completed':
         return <Badge className="bg-green-100 text-green-800 border-green-200">완료</Badge>;
       case 'failed':
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">시도함</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">시도완료</Badge>;
       case 'in-progress':
         return <Badge className="bg-blue-100 text-blue-800 border-blue-200">진행중</Badge>;
       default:
@@ -132,7 +139,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowEditDialog(true)}
-                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg shadow-sm"
               >
                 <Edit3 className="w-4 h-4 mr-1" />
                 수정
@@ -140,34 +147,41 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
             </div>
           )}
           
-          {/* 댓글 토글 버튼 */}
+          {/* 액션 버튼들 - 디자인 개선 */}
           {isVisible && (
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowComments(!showComments)}
-                className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                className="bg-gradient-to-r from-orange-50 to-pink-50 text-orange-600 border-orange-200 hover:from-orange-100 hover:to-pink-100 hover:border-orange-300 rounded-lg shadow-sm transition-all duration-200"
               >
                 <MessageCircle className="w-4 h-4 mr-1" />
                 응원 ({comments.length})
               </Button>
+              
               <Button
                 variant="outline"
                 size="sm"
-                className="text-pink-600 border-pink-200 hover:bg-pink-50"
+                onClick={handleLike}
+                className={`${
+                  liked 
+                    ? 'bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 border-pink-300' 
+                    : 'bg-gradient-to-r from-pink-50 to-rose-50 text-pink-600 border-pink-200 hover:from-pink-100 hover:to-rose-100 hover:border-pink-300'
+                } rounded-lg shadow-sm transition-all duration-200`}
               >
-                <ThumbsUp className="w-4 h-4 mr-1" />
-                공감
+                <ThumbsUp className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
+                공감 ({likeCount})
               </Button>
+              
               <Button
                 variant="outline"
                 size="sm"
-                className="text-green-600 border-green-200 hover:bg-green-50"
+                className="bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border-green-200 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 rounded-lg shadow-sm transition-all duration-200"
                 onClick={() => setShowSuggest(!showSuggest)}
               >
                 <PlusCircle className="w-4 h-4 mr-1" />
-                미션 제안하기
+                미션 제안
               </Button>
             </div>
           )}
@@ -182,7 +196,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
                     <span className="font-medium text-sm text-orange-700">{comment.author}</span>
                     {comment.isFamily && (
                       <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
-                        가족
+                        그룹
                       </Badge>
                     )}
                     <Badge variant="outline" className={`text-xs ${
@@ -267,7 +281,7 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
           {reflection.visibility === 'family' && (
             <div className="bg-blue-50 p-3 rounded-lg flex items-center gap-2 text-sm text-blue-600">
               <Users className="w-4 h-4" />
-              이 기록은 가족에게만 공개됩니다.
+              이 기록은 그룹에게만 공개됩니다.
             </div>
           )}
         </CardContent>

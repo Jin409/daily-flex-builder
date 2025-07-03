@@ -1,21 +1,3 @@
-export interface ReflectionEntry {
-  id: string;
-  date: Date;
-  category: string;
-  title: string;
-  reflection: string;
-  comments?: Comment[];
-  visibility: 'public' | 'private' | 'family'; // 변경: isPrivate 대신 visibility 사용
-  isOwner?: boolean;
-  status: 'completed' | 'failed' | 'in-progress';
-  emotions?: {
-    before?: string;
-    after?: string;
-  };
-  customGoal?: string;
-  userType?: string;
-  groupId?: string;
-}
 
 export interface Comment {
   id: string;
@@ -23,151 +5,59 @@ export interface Comment {
   content: string;
   date: Date;
   type: 'comment' | 'feedback';
-  isFamily?: boolean; // 가족 댓글 여부 추가
-}
-
-export interface UserProfile {
-  id: string;
-  name: string;
-  userType: 'explorer' | 'challenger' | 'social' | 'thinker' | 'steady';
-  targetType?: 'explorer' | 'challenger' | 'social' | 'thinker' | 'steady';
-  customCategories: string[];
-  groupId?: string;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  members: string[];
   isFamily: boolean;
 }
 
-// 새로운 카테고리 시스템
+export interface ReflectionEntry {
+  id: string;
+  title: string;
+  category: string;
+  reflection: string;
+  date: Date;
+  visibility: 'public' | 'private' | 'family';
+  status: 'completed' | 'failed' | 'in-progress';
+  isOwner: boolean;
+  comments?: Comment[];
+}
+
+export const categoryConfig: { [key: string]: { color: string; icon: string } } = {
+  '개인적 유연성': { color: 'text-blue-600 bg-blue-100', icon: 'Heart' },
+  '대인관계 유연성': { color: 'text-green-600 bg-green-100', icon: 'Users' },
+  '인지적 유연성': { color: 'text-purple-600 bg-purple-100', icon: 'Brain' },
+  '목표 달성': { color: 'text-orange-600 bg-orange-100', icon: 'Target' }
+};
+
 export const defaultCategories = [
-  {
-    id: 'social',
-    name: '사람과의 관계',
-    icon: 'Users',
-    color: 'bg-orange-100 text-orange-800 border-orange-200',
-    dotColor: '#EA580C'
-  },
-  {
-    id: 'mindset',
-    name: '생각의 변화',
-    icon: 'Brain',
-    color: 'bg-pink-100 text-pink-800 border-pink-200',
-    dotColor: '#EC4899'
-  },
-  {
-    id: 'emotion',
-    name: '감정 조절',
-    icon: 'Heart',
-    color: 'bg-purple-100 text-purple-800 border-purple-200',
-    dotColor: '#8B5CF6'
-  },
-  {
-    id: 'habit',
-    name: '새로운 도전',
-    icon: 'Target',
-    color: 'bg-green-100 text-green-800 border-green-200',
-    dotColor: '#059669'
-  },
-  {
-    id: 'communication',
-    name: '소통 방식',
-    icon: 'MessageCircle',
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
-    dotColor: '#2563EB'
-  }
+  { name: '개인적 유연성', color: 'text-blue-600 bg-blue-100', icon: 'Heart' },
+  { name: '대인관계 유연성', color: 'text-green-600 bg-green-100', icon: 'Users' },
+  { name: '인지적 유연성', color: 'text-purple-600 bg-purple-100', icon: 'Brain' },
+  { name: '목표 달성', color: 'text-orange-600 bg-orange-100', icon: 'Target' }
 ];
-
-// 사용자 유형별 맞춤 미션
-export const userTypeMissions = {
-  explorer: [
-    "오늘 처음 가보는 장소에서 30분 보내기",
-    "새로운 음식 주문해보기",
-    "모르는 길로 산책하기"
-  ],
-  challenger: [
-    "평소 회피했던 일 하나 도전하기",
-    "어려운 문제에 30분 도전하기",
-    "새로운 기술 배우기 시작하기"
-  ],
-  social: [
-    "새로운 사람과 대화하기",
-    "그룹 활동에 참여하기",
-    "누군가에게 먼저 연락하기"
-  ],
-  thinker: [
-    "평소와 반대 의견으로 생각해보기",
-    "새로운 관점으로 문제 접근하기",
-    "창의적인 해결책 찾아보기"
-  ],
-  steady: [
-    "작은 변화 하나 시도하기",
-    "루틴을 조금 바꿔보기",
-    "편안한 속도로 새로운 것 시도하기"
-  ]
-};
-
-// 기존 categoryConfig는 defaultCategories로 대체
-export const categoryConfig = defaultCategories.reduce((acc, cat) => {
-  acc[cat.name] = {
-    color: cat.color,
-    icon: cat.icon,
-    dotColor: cat.dotColor
-  };
-  return acc;
-}, {} as Record<string, any>);
-
-// 오늘 날짜 기준으로 미션 날짜 생성
-const today = new Date();
-const getDateOffset = (offset: number) => {
-  const date = new Date(today);
-  date.setDate(date.getDate() + offset);
-  return date;
-};
 
 export const mockReflections: ReflectionEntry[] = [
   {
     id: '1',
-    date: getDateOffset(0),
-    category: '사람과의 관계',
-    title: '처음 보는 사람에게 먼저 인사하기',
-    reflection: '시작 전 감정: 긴장했고, 망설여졌어요.\n\n완료 후 감정: 생각보다 별거 아니었고, 뿌듯해요.\n\n깨달은 점: 막상 해보니 별거 아니었어요. 다음엔 더 자신있게 할 수 있을 것 같아요.',
+    title: '새로운 요리 도전기',
+    category: '개인적 유연성',
+    reflection: '평소 요리를 안 하던 내가 오늘 파스타에 도전해봤다. 처음엔 많이 서툴렀지만, 완성하고 나니 뿌듯했다. 작은 변화도 큰 성장이 될 수 있다는 걸 느꼈다.',
+    date: new Date(2024, 0, 15),
+    visibility: 'public',
     status: 'completed',
     isOwner: true,
-    visibility: 'public',
     comments: [
       {
-        id: '1',
-        author: '김성장',
-        content: '정말 대단해요! 저도 이런 용기를 내보고 싶어요 👏',
-        date: getDateOffset(0),
+        id: 'c1',
+        author: '민수',
+        content: '와 정말 대단해! 나도 요리 해보고 싶어졌어',
+        date: new Date(2024, 0, 15),
         type: 'comment',
-        isFamily: false
-      },
-      {
-        id: '2',
-        author: '이민수',
-        content: '우리 그룹원이 정말 많이 성장했네요. 뿌듯해요!',
-        date: getDateOffset(0),
-        type: 'feedback',
         isFamily: true
       },
       {
-        id: '3',
-        author: '박지영',
-        content: '응원합니다! 계속 이렇게 도전해보세요 💪',
-        date: getDateOffset(0),
-        type: 'comment',
-        isFamily: false
-      },
-      {
-        id: '4',
-        author: '최하늘',
-        content: '진짜 대단하다! 나도 용기 내볼게',
-        date: getDateOffset(0),
+        id: 'c2',  
+        author: '지영',
+        content: '요리할 때 재료 준비를 미리 다 해두면 더 수월할 거야. 다음에는 더 복잡한 요리에도 도전해볼 수 있을 것 같아!',
+        date: new Date(2024, 0, 15),
         type: 'feedback',
         isFamily: true
       }
@@ -175,35 +65,27 @@ export const mockReflections: ReflectionEntry[] = [
   },
   {
     id: '2',
-    date: getDateOffset(-1),
-    category: '생각의 변화',
-    title: '내 의견과 반대되는 입장 끝까지 듣기',
-    reflection: '시작 전 감정: 답답하고 참기 어려웠어요.\n\n완료 후 감정: 새로운 관점을 발견해서 신기했어요.\n\n깨달은 점: 다양한 시각을 받아들이는 것이 생각보다 어렵지 않았어요.',
-    status: 'completed',
-    isOwner: true,
+    title: '새로운 사람들과의 만남',
+    category: '대인관계 유연성',
+    reflection: '오늘 동호회 모임에 처음 참석했다. 낯선 사람들과 대화하는 게 어색했지만, 생각보다 재미있었다. 다양한 사람들과 소통하는 능력이 조금씩 늘고 있는 것 같다.',
+    date: new Date(2024, 0, 14),
     visibility: 'family',
+    status: 'completed',
+    isOwner: false,
     comments: [
       {
-        id: '5',
-        author: '정우진',
-        content: '이런 마음가짐이 정말 중요해. 계속 이렇게 성장해 나가길 바래.',
-        date: getDateOffset(-1),
-        type: 'feedback',
-        isFamily: true
-      },
-      {
-        id: '6',
-        author: '강예린',
-        content: '와 대단하다! 나도 이런 자세를 배워야겠어',
-        date: getDateOffset(-1),
+        id: 'c3',
+        author: '현우',
+        content: '첫 모임 참석 정말 용기있는 행동이었어! 👏',
+        date: new Date(2024, 0, 14),
         type: 'comment',
         isFamily: false
       },
       {
-        id: '7',
-        author: '홍서연',
-        content: '정말 멋진 시도였어! 이런 게 진짜 성장이지',
-        date: getDateOffset(-1),
+        id: 'c4',
+        author: '수진',
+        content: '처음엔 어색해도 몇 번 더 참석하다 보면 편해질 거야. 공통 관심사를 찾아서 대화를 시작하면 더 자연스러울 수 있어!',
+        date: new Date(2024, 0, 14), 
         type: 'feedback',
         isFamily: true
       }
@@ -211,93 +93,58 @@ export const mockReflections: ReflectionEntry[] = [
   },
   {
     id: '3',
-    date: getDateOffset(-2),
-    category: '감정 조절',
-    title: '스트레스 상황에서 심호흡하기',
-    reflection: '시작 전 감정: 화가 나고 조급했어요.\n\n시도 후 감정: 완전히 성공하지는 못했지만, 조금이라도 시도해본 것이 의미있었어요.\n\n깨달은 점: 완벽하지 않아도 시도하는 것 자체가 성장이에요.',
-    status: 'failed',
-    isOwner: true,
+    title: '다른 관점으로 문제 바라보기',
+    category: '인지적 유연성',
+    reflection: '회사에서 발생한 갈등 상황을 다른 각도에서 생각해봤다. 처음엔 상대방이 잘못했다고만 생각했는데, 상대의 입장에서 생각해보니 이해할 수 있는 부분들이 있었다.',
+    date: new Date(2024, 0, 13),
     visibility: 'public',
+    status: 'completed',
+    isOwner: true,
     comments: [
       {
-        id: '8',
-        author: '박응원',
-        content: '시도하신 것만으로도 대단해요. 완벽하지 않아도 괜찮아요!',
-        date: getDateOffset(-2),
-        type: 'feedback',
+        id: 'c5',
+        author: '태현',
+        content: '다른 사람 입장에서 생각하는 건 정말 어려운 일인데 대단해!',
+        date: new Date(2024, 0, 13),
+        type: 'comment',
         isFamily: false
       },
       {
-        id: '9',
-        author: '김다은',
-        content: '괜찮아, 조금씩 나아지면 돼. 응원할게!',
-        date: getDateOffset(-2),
-        type: 'comment',
-        isFamily: true
-      },
-      {
-        id: '10',
-        author: '이소담',
-        content: '실패해도 도전한 것 자체가 멋져요 👍',
-        date: getDateOffset(-2),
-        type: 'feedback',
-        isFamily: false
-      },
-      {
-        id: '11',
-        author: '조민재',
-        content: '다음엔 더 잘할 수 있을 거야. 화이팅!',
-        date: getDateOffset(-2),
-        type: 'comment',
+        id: 'c6',
+        author: '은혜',
+        content: '이런 관점 전환 능력이 생기면 앞으로 더 복잡한 인간관계도 잘 풀어나갈 수 있을 거야. 갈등이 생겼을 때 잠시 시간을 두고 생각하는 습관을 기르는 것도 도움이 될 것 같아!',
+        date: new Date(2024, 0, 13),
+        type: 'feedback', 
         isFamily: true
       }
     ]
   },
   {
     id: '4',
-    date: getDateOffset(-3),
-    category: '새로운 도전',
-    title: '평소와 다른 길로 출근하기',
-    reflection: '시작 전 감정: 귀찮고 번거로울 것 같았어요.\n\n완료 후 감정: 새로운 발견이 있어서 재미있었어요.\n\n깨달은 점: 작은 변화지만 하루를 다르게 시작할 수 있었습니다.',
-    status: 'completed',
-    isOwner: false,
+    title: '운동 루틴 도전',
+    category: '목표 달성',
+    reflection: '3일 연속 아침 운동을 하려고 했지만 2일째에 포기했다. 완벽하지 않아도 시도한 것 자체가 의미 있다고 생각한다. 내일부터 다시 도전해보려고 한다.',
+    date: new Date(2024, 0, 12),
     visibility: 'public',
+    status: 'failed',
+    isOwner: true,
     comments: [
       {
-        id: '12',
-        author: '윤태영',
-        content: '이런 작은 변화가 큰 차이를 만들죠!',
-        date: getDateOffset(-3),
+        id: 'c7',
+        author: '정민',
+        content: '시도하는 것만으로도 충분히 대단해! 화이팅! 💪',
+        date: new Date(2024, 0, 12),
         type: 'comment',
         isFamily: false
       },
       {
-        id: '13',
-        author: '서지훈',
-        content: '정말 좋은 시도네요. 저도 해봐야겠어요.',
-        date: getDateOffset(-3),
+        id: 'c8',
+        author: '혜진',
+        content: '처음부터 매일 하려고 하지 말고 주 3회부터 시작해보는 건 어때? 작은 목표부터 달성하면서 자신감을 쌓아가는 게 지속가능할 것 같아!',
+        date: new Date(2024, 0, 12),
         type: 'feedback',
-        isFamily: false
-      },
-      {
-        id: '14',
-        author: '안유진',
-        content: '새로운 길을 찾는 것도 하나의 모험이네요!',
-        date: getDateOffset(-3),
-        type: 'comment',
-        isFamily: true
+        isFamily: true  
       }
     ]
-  },
-  {
-    id: '5',
-    date: getDateOffset(-4),
-    category: '소통 방식',
-    title: '평소 말 안 하는 동료와 대화하기',
-    reflection: '시작 전 감정: 어색하고 뭘 말해야 할지 몰랐어요.\n\n완료 후 감정: 생각보다 재미있는 대화를 나눌 수 있었어요.\n\n깨달은 점: 새로운 인연을 만들 수 있었고, 소통의 즐거움을 느꼈습니다.',
-    status: 'completed',
-    isOwner: false,
-    visibility: 'private',
-    comments: []
   }
 ];
