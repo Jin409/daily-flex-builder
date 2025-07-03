@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import UserTypeTest from '@/components/UserTypeTest';
 import { useNavigate } from 'react-router-dom';
 import GroupManagement from '@/components/GroupManagement';
+import GoalManager from '@/components/GoalManager';
 
 const flexibilityLevels = [
   { level: 1, character: "👶", description: "시작" },
@@ -32,6 +32,8 @@ const Index = () => {
   const [userType, setUserType] = useState<string | null>(null);
   const [targetType, setTargetType] = useState<string | null>(null);
   const [isFailed, setIsFailed] = useState(false);
+  const [showGoalManager, setShowGoalManager] = useState(false);
+  const [activeGoal, setActiveGoal] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showGroupModal, setShowGroupModal] = useState(false);
@@ -106,6 +108,10 @@ const Index = () => {
     setShowGroupModal(false);
   };
 
+  const handleGoalSelect = (goal: any) => {
+    setActiveGoal(goal);
+  };
+
   useEffect(() => {
     setShowUserTypeTest(true);
   }, []);
@@ -158,6 +164,15 @@ const Index = () => {
             >
               <Users className="w-4 h-4" />
               그룹
+            </Button>
+
+            <Button
+              onClick={() => setShowGoalManager(true)}
+              variant="outline"
+              className="flex items-center gap-2 h-10 px-4 py-2 bg-white hover:bg-green-50 text-green-700 border-green-200 hover:border-green-300 rounded-lg shadow-sm transition-all duration-200 font-medium"
+            >
+              <Target className="w-4 h-4" />
+              목표 관리
             </Button>
           </div>
         </div>
@@ -221,6 +236,37 @@ const Index = () => {
           </Card>
         </div>
 
+        {/* 활성 목표 표시 */}
+        {activeGoal && (
+          <Card className="border-0 shadow-lg bg-white mb-8">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Target className="w-6 h-6 text-green-500" />
+                <CardTitle>현재 목표</CardTitle>
+                <Badge className="ml-auto bg-green-100 text-green-800">
+                  진행중
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <h3 className="text-lg font-semibold mb-2">{activeGoal.title}</h3>
+              <p className="text-gray-600 mb-4">{activeGoal.description}</p>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-gray-500">진행률</span>
+                <span className="text-sm font-medium">{activeGoal.completedMissions}/{activeGoal.totalMissions}</span>
+              </div>
+              <Progress value={(activeGoal.completedMissions / activeGoal.totalMissions) * 100} className="mb-4" />
+              <Button 
+                onClick={() => setShowGoalManager(true)}
+                variant="outline"
+                className="w-full"
+              >
+                목표 상세보기
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* 통계 및 성장 기록 */}
         <StatsPanel />
 
@@ -259,6 +305,13 @@ const Index = () => {
           onClose={() => setShowGroupModal(false)}
           onJoinGroup={handleJoinGroup}
           onCreateGroup={handleCreateGroup}
+        />
+
+        {/* 목표 관리 모달 */}
+        <GoalManager
+          open={showGoalManager}
+          onClose={() => setShowGoalManager(false)}
+          onSelectGoal={handleGoalSelect}
         />
       </div>
     </div>

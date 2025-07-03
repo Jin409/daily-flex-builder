@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Compass, Zap, Users, Brain, Anchor, ArrowRight } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Compass, Zap, Users, Brain, Anchor, ArrowRight, Edit, ChevronRight } from 'lucide-react';
 
 interface UserTypeTestProps {
   open: boolean;
@@ -56,41 +57,47 @@ const userTypes = {
     name: "탐험가", 
     icon: Compass, 
     description: "새로운 경험을 통해 성장하는 당신",
-    traits: "호기심이 많고 모험을 즐기며 새로운 것을 시도하는 것을 좋아합니다"
+    traits: "호기심이 많고 모험을 즐기며 새로운 것을 시도하는 것을 좋아합니다",
+    color: "text-blue-600"
   },
   challenger: { 
     name: "도전자", 
     icon: Zap, 
     description: "어려운 과제를 통해 성장하는 당신",
-    traits: "목표지향적이고 어려움을 극복하는 것에서 만족감을 얻습니다"
+    traits: "목표지향적이고 어려움을 극복하는 것에서 만족감을 얻습니다",
+    color: "text-orange-600"
   },
   social: { 
     name: "소통가", 
     icon: Users, 
     description: "관계를 통해 성장하는 당신",
-    traits: "사람들과의 관계를 중시하고 협력을 통해 시너지를 만듭니다"
+    traits: "사람들과의 관계를 중시하고 협력을 통해 시너지를 만듭니다",
+    color: "text-green-600"
   },
   thinker: { 
     name: "분석가", 
     icon: Brain, 
     description: "깊은 사고를 통해 성장하는 당신",
-    traits: "논리적이고 체계적으로 접근하며 깊이 있게 생각합니다"
+    traits: "논리적이고 체계적으로 접근하며 깊이 있게 생각합니다",
+    color: "text-purple-600"
   },
   steady: { 
     name: "안정가", 
     icon: Anchor, 
     description: "꾸준함을 통해 성장하는 당신",
-    traits: "안정성을 추구하고 꾸준한 노력으로 목표를 달성합니다"
+    traits: "안정성을 추구하고 꾸준한 노력으로 목표를 달성합니다",
+    color: "text-indigo-600"
   }
 };
 
 const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }) => {
-  const [step, setStep] = useState<'current' | 'target' | 'result'>('current');
+  const [step, setStep] = useState<'current' | 'target' | 'result' | 'type-select'>('current');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswers, setCurrentAnswers] = useState<string[]>([]);
   const [targetAnswers, setTargetAnswers] = useState<string[]>([]);
   const [currentType, setCurrentType] = useState<string>('');
   const [targetType, setTargetType] = useState<string>('');
+  const [selectingType, setSelectingType] = useState<'current' | 'target'>('current');
 
   const calculateType = (answers: string[]) => {
     const typeCount = answers.reduce((acc, type) => {
@@ -144,6 +151,20 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
     }
   };
 
+  const handleTypeSelect = (typeKey: string) => {
+    if (selectingType === 'current') {
+      setCurrentType(typeKey);
+    } else {
+      setTargetType(typeKey);
+    }
+    setStep('result');
+  };
+
+  const handleEditType = (typeToEdit: 'current' | 'target') => {
+    setSelectingType(typeToEdit);
+    setStep('type-select');
+  };
+
   const getProgress = () => {
     if (step === 'current') {
       return (currentQuestion / questions.length) * 50;
@@ -156,12 +177,14 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
   const getStepTitle = () => {
     if (step === 'current') return '현재 나의 성향';
     if (step === 'target') return '되고 싶은 모습';
+    if (step === 'type-select') return `${selectingType === 'current' ? '현재' : '목표'} 성향 선택`;
     return '진단 완료';
   };
 
   const getStepDescription = () => {
     if (step === 'current') return '현재 당신의 성향을 파악해보세요';
     if (step === 'target') return '어떤 모습으로 성장하고 싶으신가요?';
+    if (step === 'type-select') return '원하는 성향을 직접 선택해보세요';
     return '맞춤형 미션으로 목표를 달성해보세요';
   };
 
@@ -177,11 +200,36 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
 
         <div className="space-y-4">
           <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className={`w-3 h-3 rounded-full ${step === 'current' ? 'bg-orange-500' : step === 'target' ? 'bg-orange-300' : 'bg-green-500'}`}></div>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <div className={`w-3 h-3 rounded-full ${step === 'target' ? 'bg-orange-500' : step === 'result' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <div className={`w-3 h-3 rounded-full ${step === 'result' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            </div>
             <h3 className="font-medium text-orange-700 mb-2">{getStepTitle()}</h3>
             <Progress value={getProgress()} className="w-full" />
           </div>
           
-          {step === 'result' ? (
+          {step === 'type-select' ? (
+            <div className="space-y-2">
+              {Object.entries(userTypes).map(([typeKey, typeInfo]) => (
+                <Card key={typeKey} className="cursor-pointer hover:bg-orange-50" onClick={() => handleTypeSelect(typeKey)}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      {React.createElement(typeInfo.icon, {
+                        className: `w-6 h-6 ${typeInfo.color}`
+                      })}
+                      <div className="flex-1">
+                        <h4 className="font-medium">{typeInfo.name}</h4>
+                        <p className="text-sm text-gray-600">{typeInfo.traits}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : step === 'result' ? (
             <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
               <CardContent className="p-6 text-center">
                 <div className="grid grid-cols-1 gap-6">
@@ -196,6 +244,15 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
                       <p className="text-sm font-medium">
                         {userTypes[currentType as keyof typeof userTypes].name}
                       </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditType('current')}
+                        className="mt-1 text-xs text-orange-600 hover:text-orange-700"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        수정
+                      </Button>
                     </div>
                     
                     <ArrowRight className="w-6 h-6 text-gray-400" />
@@ -210,6 +267,15 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
                       <p className="text-sm font-medium">
                         {userTypes[targetType as keyof typeof userTypes].name}
                       </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditType('target')}
+                        className="mt-1 text-xs text-pink-600 hover:text-pink-700"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        수정
+                      </Button>
                     </div>
                   </div>
                   
@@ -232,8 +298,13 @@ const UserTypeTest: React.FC<UserTypeTestProps> = ({ open, onClose, onComplete }
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-0 bg-gradient-to-r from-orange-50 to-pink-50">
+            <Card className={`border-0 ${step === 'current' ? 'bg-gradient-to-r from-orange-50 to-yellow-50' : 'bg-gradient-to-r from-pink-50 to-purple-50'}`}>
               <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <Badge className={`${step === 'current' ? 'bg-orange-100 text-orange-800' : 'bg-pink-100 text-pink-800'} mb-2`}>
+                    {step === 'current' ? '1단계: 현재 성향' : '2단계: 목표 성향'}
+                  </Badge>
+                </div>
                 <h3 className="text-lg font-medium mb-4 text-center">
                   {questions[currentQuestion].question}
                 </h3>
