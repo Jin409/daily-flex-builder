@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Target, CheckCircle, Clock, Star, ArrowRight } from 'lucide-react';
+import { Target, CheckCircle, Clock, Plus, ArrowRight } from 'lucide-react';
+import GoalRegistrationModal from './GoalRegistrationModal';
 
 interface Goal {
   id: string;
@@ -90,6 +91,7 @@ const mockGoals: Goal[] = [
 const GoalManager: React.FC<GoalManagerProps> = ({ open, onClose, onSelectGoal }) => {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   const handleGoalSelect = (goal: Goal) => {
     const updatedGoals = goals.map(g => ({
@@ -101,86 +103,107 @@ const GoalManager: React.FC<GoalManagerProps> = ({ open, onClose, onSelectGoal }
     onClose();
   };
 
+  const handleSaveNewGoal = (newGoal: Goal) => {
+    setGoals([...goals, newGoal]);
+  };
+
   const getProgressPercentage = (goal: Goal) => {
     return (goal.completedMissions / goal.totalMissions) * 100;
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-center flex items-center justify-center gap-2">
-            <Target className="w-5 h-5 text-orange-600" />
-            목표 관리
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            달성하고 싶은 목표를 선택하고 단계별 미션을 수행해보세요
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center flex items-center justify-center gap-2">
+              <Target className="w-5 h-5 text-orange-600" />
+              목표 관리
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              달성하고 싶은 목표를 선택하고 단계별 미션을 수행해보세요
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-4">
-          {goals.map((goal) => (
-            <Card 
-              key={goal.id} 
-              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                goal.isActive ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
-              }`}
-              onClick={() => setSelectedGoal(selectedGoal?.id === goal.id ? null : goal)}
+          <div className="space-y-4">
+            {/* 새 목표 등록 버튼 */}
+            <Button 
+              onClick={() => setShowRegistrationModal(true)}
+              className="w-full bg-green-600 hover:bg-green-700"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg">{goal.title}</CardTitle>
-                    {goal.isActive && (
-                      <Badge className="bg-orange-100 text-orange-800">활성</Badge>
-                    )}
+              <Plus className="w-4 h-4 mr-2" />
+              새 목표 등록하기
+            </Button>
+
+            {goals.map((goal) => (
+              <Card 
+                key={goal.id} 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  goal.isActive ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
+                }`}
+                onClick={() => setSelectedGoal(selectedGoal?.id === goal.id ? null : goal)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-lg">{goal.title}</CardTitle>
+                      {goal.isActive && (
+                        <Badge className="bg-orange-100 text-orange-800">활성</Badge>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {goal.completedMissions}/{goal.totalMissions}
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    {goal.completedMissions}/{goal.totalMissions}
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600">{goal.description}</p>
-                <Progress value={getProgressPercentage(goal)} className="mt-2" />
-              </CardHeader>
-              
-              {selectedGoal?.id === goal.id && (
-                <CardContent className="pt-0">
-                  <div className="space-y-2 mb-4">
-                    <h4 className="font-medium text-gray-800 mb-2">하위 미션들:</h4>
-                    {goal.missions.map((mission) => (
-                      <div key={mission.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                        {mission.isCompleted ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        ) : (
-                          <Clock className="w-4 h-4 text-gray-400" />
-                        )}
-                        <div className="flex-1">
-                          <p className={`text-sm font-medium ${mission.isCompleted ? 'text-green-800' : 'text-gray-800'}`}>
-                            {mission.title}
-                          </p>
-                          <p className="text-xs text-gray-600">{mission.description}</p>
+                  <p className="text-sm text-gray-600">{goal.description}</p>
+                  <Progress value={getProgressPercentage(goal)} className="mt-2" />
+                </CardHeader>
+                
+                {selectedGoal?.id === goal.id && (
+                  <CardContent className="pt-0">
+                    <div className="space-y-2 mb-4">
+                      <h4 className="font-medium text-gray-800 mb-2">하위 미션들:</h4>
+                      {goal.missions.map((mission) => (
+                        <div key={mission.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                          {mission.isCompleted ? (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Clock className="w-4 h-4 text-gray-400" />
+                          )}
+                          <div className="flex-1">
+                            <p className={`text-sm font-medium ${mission.isCompleted ? 'text-green-800' : 'text-gray-800'}`}>
+                              {mission.title}
+                            </p>
+                            <p className="text-xs text-gray-600">{mission.description}</p>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {mission.category}
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="text-xs">
-                          {mission.category}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button 
-                    onClick={() => handleGoalSelect(goal)}
-                    className="w-full bg-orange-600 hover:bg-orange-700"
-                  >
-                    {goal.isActive ? '활성 목표' : '이 목표 선택하기'}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </CardContent>
-              )}
-            </Card>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      onClick={() => handleGoalSelect(goal)}
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                    >
+                      {goal.isActive ? '활성 목표' : '이 목표 선택하기'}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                )}
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <GoalRegistrationModal
+        open={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+        onSave={handleSaveNewGoal}
+      />
+    </>
   );
 };
 

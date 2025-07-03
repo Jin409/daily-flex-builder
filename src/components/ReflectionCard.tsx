@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Brain, Heart, MessageCircle, ThumbsUp, Send, PlusCircle, Edit3, Lock, User, Target } from 'lucide-react';
+import { Users, Brain, Heart, MessageCircle, ThumbsUp, Send, PlusCircle, Edit3, Lock, User, Target, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { ReflectionEntry, categoryConfig, Comment, defaultCategories } from '@/types/reflection';
@@ -128,6 +127,25 @@ const ReflectionCard = ({ reflection, onUpdate }: ReflectionCardProps) => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* 목표-미션 연결 표시 */}
+          {reflection.relatedGoal && (
+            <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-800">연결된 목표</span>
+              </div>
+              <div className="text-sm text-gray-700 mb-1">
+                <strong>{reflection.relatedGoal.title}</strong>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span className="text-sm text-gray-600">
+                  미션: {reflection.relatedGoal.mission.title}
+                </span>
+              </div>
+            </div>
+          )}
+
           <p className="text-gray-700 leading-relaxed mb-4">
             {reflection.reflection}
           </p>

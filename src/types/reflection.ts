@@ -17,6 +17,14 @@ export interface ReflectionEntry {
   status: 'completed' | 'failed' | 'in-progress';
   isOwner: boolean;
   comments?: Comment[];
+  relatedGoal?: {
+    id: string;
+    title: string;
+    mission: {
+      id: string;
+      title: string;
+    };
+  };
 }
 
 export const categoryConfig: { [key: string]: { color: string; icon: string } } = {
@@ -43,6 +51,14 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'public',
     status: 'completed',
     isOwner: true,
+    relatedGoal: {
+      id: 'goal1',
+      title: '일상에서 새로운 것들 도전하기',
+      mission: {
+        id: 'm4',
+        title: '새로운 취미 활동 시작하기'
+      }
+    },
     comments: [
       {
         id: 'c1',
@@ -71,6 +87,14 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'family',
     status: 'completed',
     isOwner: false,
+    relatedGoal: {
+      id: 'goal2',
+      title: '대인관계 유연성 키우기',
+      mission: {
+        id: 'm7',
+        title: '새로운 모임에 참여하기'
+      }
+    },
     comments: [
       {
         id: 'c3',
@@ -127,6 +151,14 @@ export const mockReflections: ReflectionEntry[] = [
     visibility: 'public',
     status: 'failed',
     isOwner: true,
+    relatedGoal: {
+      id: 'goal3',
+      title: '감정 조절 능력 향상하기',
+      mission: {
+        id: 'm12',
+        title: '스트레스 해소 활동 하기'
+      }
+    },
     comments: [
       {
         id: 'c7',
