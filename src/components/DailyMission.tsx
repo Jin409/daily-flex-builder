@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -475,7 +474,7 @@ const DailyMission: React.FC<DailyMissionProps> = ({
             </SelectTrigger>
             <SelectContent>
               {defaultCategories.map(category => (
-                <SelectItem key={category.id} value={category.name}>
+                <SelectItem key={category.name} value={category.name}>
                   {category.name}
                 </SelectItem>
               ))}

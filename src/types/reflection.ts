@@ -1,4 +1,3 @@
-
 export interface Comment {
   id: string;
   author: string;
@@ -148,3 +147,26 @@ export const mockReflections: ReflectionEntry[] = [
     ]
   }
 ];
+
+export const userTypeMissions = {
+  introvert: [
+    "새로운 사람과 대화하기",
+    "그룹 활동에 참여하기",
+    "의견을 적극적으로 표현하기"
+  ],
+  extrovert: [
+    "혼자만의 시간 가지기",
+    "조용한 활동 즐기기", 
+    "깊이 있는 대화하기"
+  ],
+  analytical: [
+    "직감적으로 결정하기",
+    "감정적 접근법 시도하기",
+    "창의적 활동하기"
+  ],
+  creative: [
+    "논리적으로 분석하기",
+    "체계적으로 계획하기",
+    "데이터 기반 결정하기"
+  ]
+};
