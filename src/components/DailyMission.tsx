@@ -236,6 +236,16 @@ const DailyMission: React.FC<DailyMissionProps> = ({
 
   const currentMission = missionList[currentMissionIndex];
 
+  // 연결된 목표 데이터 (예시)
+  const relatedGoal = {
+    id: 'goal1',
+    title: '일상에서 새로운 것들 도전하기',
+    mission: {
+      id: 'm4',
+      title: '새로운 취미 활동 시작하기'
+    }
+  };
+
   // 현재 성향과 목표 성향에 따른 맞춤 미션 추천
   useEffect(() => {
     if (userType || targetType) {
@@ -330,6 +340,25 @@ const DailyMission: React.FC<DailyMissionProps> = ({
     <div className="space-y-4">
       <Card className="border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-transparent">
         <CardContent className="p-6">
+          {/* 연결된 목표 표시 */}
+          {relatedGoal && (
+            <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-800">연결된 목표</span>
+              </div>
+              <div className="text-sm text-gray-700 mb-1">
+                <strong>{relatedGoal.title}</strong>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span className="text-sm text-gray-600">
+                  미션: {relatedGoal.mission.title}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-orange-100">
               <IconComponent className="w-6 h-6 text-orange-600" />
